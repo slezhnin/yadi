@@ -1,0 +1,16 @@
+group 'com.lezhnin'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':yadi-api')
+    testCompile libraries.junitJupiterApi
+    testRuntime libraries.junitJupiterEngine
+}

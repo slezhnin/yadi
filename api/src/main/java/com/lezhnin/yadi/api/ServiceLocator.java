@@ -3,8 +3,8 @@ package com.lezhnin.yadi.api;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface ServiceBeanProviderFinder {
+public interface ServiceLocator {
 
     @Nullable
-    <T> ServiceBeanProvider<T> find(@Nonnull Class<T> serviceBean);
+    <T> T locate(@Nonnull Class<T> beanType);
 }

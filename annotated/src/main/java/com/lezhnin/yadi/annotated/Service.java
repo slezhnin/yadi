@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface ServiceBean {
+public @interface Service {
 
     Class<?>[] implemented() default {};
     Class<?>[] dependencies() default {};

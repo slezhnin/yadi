@@ -2,22 +2,22 @@ package com.lezhnin.yadi.annotated;
 
 import static com.lezhnin.yadi.annotated.PackageScanModule.fromPackage;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import com.lezhnin.yadi.api.ServiceBeanLocator;
+import com.lezhnin.yadi.api.ServiceLocator;
 import org.junit.jupiter.api.Test;
 
 class PackageScanModuleTest {
 
-    @ServiceBean
+    @Service
     public static class B {
 
     }
 
-    @ServiceBean
+    @Service
     public static class C {
 
     }
 
-    @ServiceBean(dependencies = {B.class, C.class})
+    @Service(dependencies = {B.class, C.class})
     public static class A {
 
         private final B b;
@@ -39,7 +39,7 @@ class PackageScanModuleTest {
 
     @Test
     void testFromPackage() {
-        ServiceBeanLocator module = fromPackage(getClass().getPackage());
+        ServiceLocator module = fromPackage(getClass().getPackage());
 
         final A actual = module.locate(A.class);
 

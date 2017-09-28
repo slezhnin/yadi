@@ -1,8 +1,8 @@
 package com.lezhnin.yadi.annotated;
 
-import static com.lezhnin.yadi.simple.SimpleServiceBeanProvider.provider;
+import static com.lezhnin.yadi.simple.SimpleServiceProvider.provider;
 import static java.util.Objects.requireNonNull;
-import com.lezhnin.yadi.api.ServiceBeanLocator;
+import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.simple.SimpleModule;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -12,16 +12,16 @@ public class PackageScanModule extends SimpleModule {
 
     private final String packagePrefix;
 
-    protected PackageScanModule(@Nonnull final String packagePrefix, @Nonnull ServiceBeanLocator... parents) {
+    protected PackageScanModule(@Nonnull final String packagePrefix, @Nonnull ServiceLocator... parents) {
         super(parents);
         this.packagePrefix = requireNonNull(packagePrefix);
     }
 
-    public static ServiceBeanLocator fromPackage(@Nonnull String prefix, @Nonnull ServiceBeanLocator... parents) {
+    public static ServiceLocator fromPackage(@Nonnull String prefix, @Nonnull ServiceLocator... parents) {
         return new PackageScanModule(prefix, parents);
     }
 
-    public static ServiceBeanLocator fromPackage(@Nonnull Package pkg, @Nonnull ServiceBeanLocator... parents) {
+    public static ServiceLocator fromPackage(@Nonnull Package pkg, @Nonnull ServiceLocator... parents) {
         return new PackageScanModule(pkg.getName(), parents);
     }
 
@@ -29,19 +29,19 @@ public class PackageScanModule extends SimpleModule {
     @SuppressWarnings("unchecked")
     protected void doBind() {
         final Reflections reflections = new Reflections(packagePrefix);
-        final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(ServiceBean.class);
-        for (Class<?> annotatedClass : annotatedClasses) {
-            final ServiceBean annotation = requireNonNull(annotatedClass.getAnnotation(ServiceBean.class));
-            final Class<?>[] implementedInterfaces = (
-                    annotation.implemented().length != 0 ?
-                            annotation.implemented() : (
-                            annotatedClass.getInterfaces().length != 0 ?
-                                    annotatedClass.getInterfaces() :
-                                    new Class<?>[]{annotatedClass}
+        final Set<Class<?>> annotatedServiceClasses = reflections.getTypesAnnotatedWith(Service.class);
+        for (Class<?> annotatedServiceClass : annotatedServiceClasses) {
+            final Service serviceAnnotation = requireNonNull(annotatedServiceClass.getAnnotation(Service.class));
+            final Class<?>[] implementedServiceInterfaces = (
+                    serviceAnnotation.implemented().length != 0 ?
+                            serviceAnnotation.implemented() : (
+                            annotatedServiceClass.getInterfaces().length != 0 ?
+                                    annotatedServiceClass.getInterfaces() :
+                                    new Class<?>[]{annotatedServiceClass}
                     )
             );
-            for (Class implementedInterface : implementedInterfaces) {
-                bind(implementedInterface).to(provider(annotatedClass, annotation.dependencies()));
+            for (Class implementedServiceInterface : implementedServiceInterfaces) {
+                bind(implementedServiceInterface).to(provider(annotatedServiceClass, serviceAnnotation.dependencies()));
             }
         }
     }

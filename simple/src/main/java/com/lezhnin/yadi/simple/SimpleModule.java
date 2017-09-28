@@ -2,38 +2,38 @@ package com.lezhnin.yadi.simple;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
-import com.lezhnin.yadi.api.ServiceBeanBinder;
-import com.lezhnin.yadi.api.ServiceBeanImplementor;
-import com.lezhnin.yadi.api.ServiceBeanLocator;
-import com.lezhnin.yadi.api.ServiceBeanStorage;
+import com.lezhnin.yadi.api.ServiceBinder;
+import com.lezhnin.yadi.api.ServiceImplementor;
+import com.lezhnin.yadi.api.ServiceLocator;
+import com.lezhnin.yadi.api.ServiceStorage;
 import javax.annotation.Nonnull;
 
-public class SimpleModule extends SimpleServiceBeanLocator implements ServiceBeanBinder {
+public class SimpleModule extends SimpleServiceLocator implements ServiceBinder {
 
-    private final ServiceBeanBinder serviceBeanBinder;
+    private final ServiceBinder serviceBinder;
 
-    protected SimpleModule(@Nonnull ServiceBeanStorage storage, @Nonnull ServiceBeanLocator... parents) {
+    protected SimpleModule(@Nonnull ServiceStorage storage, @Nonnull ServiceLocator... parents) {
         super(
-                new SimpleServiceBeanProviderFinder(requireNonNull(storage)),
+                new SimpleServiceProviderFinder(requireNonNull(storage)),
                 asList(requireNonNull(parents))
         );
-        serviceBeanBinder = new SimpleServiceBeanBinder(storage);
+        serviceBinder = new SimpleServiceBinder(storage);
         doBind();
     }
 
-    protected SimpleModule(@Nonnull ServiceBeanLocator... parents) {
-        this(new SimpleServiceBeanStorage(), parents);
+    protected SimpleModule(@Nonnull ServiceLocator... parents) {
+        this(new SimpleServiceStorage(), parents);
     }
 
     @Nonnull
-    public static SimpleModule simpleModule(@Nonnull ServiceBeanLocator... parents) {
+    public static SimpleModule simpleModule(@Nonnull ServiceLocator... parents) {
         return new SimpleModule(parents);
     }
 
     @Nonnull
     @Override
-    public <T> ServiceBeanImplementor<T> bind(@Nonnull final Class<? extends T> serviceBeanInterface) {
-        return serviceBeanBinder.bind(requireNonNull(serviceBeanInterface));
+    public <T> ServiceImplementor<T> bind(@Nonnull final Class<? extends T> serviceBeanInterface) {
+        return serviceBinder.bind(requireNonNull(serviceBeanInterface));
     }
 
     protected void doBind() {

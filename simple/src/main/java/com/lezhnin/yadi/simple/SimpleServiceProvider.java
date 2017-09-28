@@ -5,7 +5,6 @@ import com.lezhnin.yadi.api.ServiceConstructionException;
 import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.api.ServiceProvider;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class SimpleServiceProvider<T> implements ServiceProvider<T> {
 
@@ -25,7 +24,7 @@ public class SimpleServiceProvider<T> implements ServiceProvider<T> {
         return new SimpleServiceProvider<>(implementation, dependencies);
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public T provide(@Nonnull final ServiceLocator serviceLocator) {
         try {

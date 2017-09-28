@@ -5,6 +5,6 @@ import javax.annotation.Nullable;
 
 public interface ServiceProvider<T> {
 
-    @Nullable
+    @Nonnull
     T provide(@Nonnull ServiceLocator serviceLocator);
 }

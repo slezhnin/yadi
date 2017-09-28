@@ -1,10 +1,7 @@
 package com.lezhnin.yadi.simple;
 
 import static java.util.Objects.requireNonNull;
-import com.lezhnin.yadi.api.ServiceBeanBinder;
-import com.lezhnin.yadi.api.ServiceBeanImplementor;
 import com.lezhnin.yadi.api.ServiceBeanLocator;
-import com.lezhnin.yadi.api.ServiceBeanModule;
 import com.lezhnin.yadi.api.ServiceBeanNotFoundException;
 import com.lezhnin.yadi.api.ServiceBeanProvider;
 import com.lezhnin.yadi.api.ServiceBeanProviderFinder;
@@ -12,27 +9,18 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SimpleServiceBeanModule implements ServiceBeanModule {
+public class SimpleServiceBeanLocator implements ServiceBeanLocator {
 
-    private final ServiceBeanBinder serviceBeanBinder;
     private final ServiceBeanProviderFinder serviceBeanProviderFinder;
     private final List<ServiceBeanLocator> parents;
 
-    public SimpleServiceBeanModule(@Nonnull final ServiceBeanBinder serviceBeanBinder,
-                                   @Nonnull final ServiceBeanProviderFinder serviceBeanProviderFinder,
-                                   @Nonnull final List<ServiceBeanLocator> parents) {
-        this.serviceBeanBinder = requireNonNull(serviceBeanBinder);
+    public SimpleServiceBeanLocator(@Nonnull final ServiceBeanProviderFinder serviceBeanProviderFinder,
+                                    @Nonnull final List<ServiceBeanLocator> parents) {
         this.serviceBeanProviderFinder = requireNonNull(serviceBeanProviderFinder);
         this.parents = requireNonNull(parents);
         for (ServiceBeanLocator parent : parents) {
             requireNonNull(parent);
         }
-    }
-
-    @Nonnull
-    @Override
-    public <T> ServiceBeanImplementor<T> bind(@Nonnull final Class<T> serviceBeanInterface) {
-        return serviceBeanBinder.bind(requireNonNull(serviceBeanInterface));
     }
 
     @Nullable

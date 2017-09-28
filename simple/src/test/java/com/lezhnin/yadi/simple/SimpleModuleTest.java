@@ -3,7 +3,7 @@ package com.lezhnin.yadi.simple;
 import static com.lezhnin.yadi.simple.SimpleModule.simpleModule;
 import static com.lezhnin.yadi.simple.SimpleServiceBeanProvider.provider;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import com.lezhnin.yadi.api.ServiceBeanModule;
+import com.lezhnin.yadi.api.ServiceBeanLocator;
 import org.junit.jupiter.api.Test;
 
 class SimpleModuleTest {
@@ -37,14 +37,14 @@ class SimpleModuleTest {
 
     @Test
     void test1() {
-        final ServiceBeanModule parent = new SimpleModule() {
+        final ServiceBeanLocator parent = new SimpleModule() {
             @Override
             protected void doBind() {
                 bind(B.class).to(provider(B.class));
             }
         };
 
-        final ServiceBeanModule module = new SimpleModule(parent) {
+        final ServiceBeanLocator module = new SimpleModule(parent) {
             @Override
             protected void doBind() {
                 bind(A.class).to(provider(A.class, B.class, C.class));
@@ -61,10 +61,10 @@ class SimpleModuleTest {
 
     @Test
     void test2() {
-        final ServiceBeanModule parent = simpleModule();
+        final SimpleModule parent = simpleModule();
         parent.bind(B.class).to(provider(B.class));
 
-        final ServiceBeanModule module = simpleModule(parent);
+        final SimpleModule module = simpleModule(parent);
         module.bind(A.class).to(provider(A.class, B.class, C.class))
               .bind(C.class).to(provider(C.class));
 

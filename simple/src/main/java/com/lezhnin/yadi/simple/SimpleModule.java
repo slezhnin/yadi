@@ -2,18 +2,22 @@ package com.lezhnin.yadi.simple;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
+import com.lezhnin.yadi.api.ServiceBeanBinder;
+import com.lezhnin.yadi.api.ServiceBeanImplementor;
 import com.lezhnin.yadi.api.ServiceBeanLocator;
 import com.lezhnin.yadi.api.ServiceBeanStorage;
 import javax.annotation.Nonnull;
 
-public class SimpleModule extends SimpleServiceBeanModule {
+public class SimpleModule extends SimpleServiceBeanLocator implements ServiceBeanBinder {
+
+    private final ServiceBeanBinder serviceBeanBinder;
 
     private SimpleModule(@Nonnull ServiceBeanStorage storage, @Nonnull ServiceBeanLocator... parents) {
         super(
-                new SimpleServiceBeanBinder(requireNonNull(storage)),
                 new SimpleServiceBeanProviderFinder(requireNonNull(storage)),
                 asList(requireNonNull(parents))
         );
+        serviceBeanBinder = new SimpleServiceBeanBinder(storage);
         doBind();
     }
 
@@ -22,9 +26,16 @@ public class SimpleModule extends SimpleServiceBeanModule {
     }
 
     @Nonnull
-    public static SimpleServiceBeanModule simpleModule(@Nonnull ServiceBeanLocator... parents) {
+    public static SimpleModule simpleModule(@Nonnull ServiceBeanLocator... parents) {
         return new SimpleModule(parents);
     }
 
-    protected void doBind() {}
+    @Nonnull
+    @Override
+    public <T> ServiceBeanImplementor<T> bind(@Nonnull final Class<T> serviceBeanInterface) {
+        return serviceBeanBinder.bind(requireNonNull(serviceBeanInterface));
+    }
+
+    protected void doBind() {
+    }
 }

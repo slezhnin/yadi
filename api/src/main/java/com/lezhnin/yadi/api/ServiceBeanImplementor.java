@@ -5,5 +5,5 @@ import javax.annotation.Nonnull;
 public interface ServiceBeanImplementor<T> {
 
     @Nonnull
-    ServiceBeanBinder to(@Nonnull ServiceBeanProvider<T> serviceBeanProvider);
+    ServiceBeanBinder to(@Nonnull ServiceBeanProvider<? extends T> serviceBeanProvider);
 }

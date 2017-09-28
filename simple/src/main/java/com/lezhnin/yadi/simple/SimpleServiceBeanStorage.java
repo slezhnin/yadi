@@ -20,7 +20,8 @@ public class SimpleServiceBeanStorage implements ServiceBeanStorage {
 
     @Nonnull
     @Override
-    public <T> ServiceBeanStorage put(@Nonnull final Class<T> serviceBeanInterface, @Nonnull final ServiceBeanProvider<T> serviceBeanProvider) {
+    public <T> ServiceBeanStorage put(@Nonnull final Class<? extends T> serviceBeanInterface,
+                                      @Nonnull final ServiceBeanProvider<? extends T> serviceBeanProvider) {
         storage.put(serviceBeanInterface, serviceBeanProvider);
         return this;
     }

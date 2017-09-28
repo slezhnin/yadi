@@ -3,4 +3,6 @@ include 'api'
 findProject(':api')?.name = 'yadi-api'
 include 'simple'
 findProject(':simple')?.name = 'yadi-simple'
+include 'annotated'
+findProject(':annotated')?.name = 'yadi-annotated'
 

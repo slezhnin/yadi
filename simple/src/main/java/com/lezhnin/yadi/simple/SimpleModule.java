@@ -12,7 +12,7 @@ public class SimpleModule extends SimpleServiceBeanLocator implements ServiceBea
 
     private final ServiceBeanBinder serviceBeanBinder;
 
-    private SimpleModule(@Nonnull ServiceBeanStorage storage, @Nonnull ServiceBeanLocator... parents) {
+    protected SimpleModule(@Nonnull ServiceBeanStorage storage, @Nonnull ServiceBeanLocator... parents) {
         super(
                 new SimpleServiceBeanProviderFinder(requireNonNull(storage)),
                 asList(requireNonNull(parents))
@@ -32,7 +32,7 @@ public class SimpleModule extends SimpleServiceBeanLocator implements ServiceBea
 
     @Nonnull
     @Override
-    public <T> ServiceBeanImplementor<T> bind(@Nonnull final Class<T> serviceBeanInterface) {
+    public <T> ServiceBeanImplementor<T> bind(@Nonnull final Class<? extends T> serviceBeanInterface) {
         return serviceBeanBinder.bind(requireNonNull(serviceBeanInterface));
     }
 

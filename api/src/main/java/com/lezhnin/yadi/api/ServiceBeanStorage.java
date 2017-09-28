@@ -9,5 +9,6 @@ public interface ServiceBeanStorage {
     <T> ServiceBeanProvider<T> get(@Nonnull Class<T> serviceBeanInterface);
 
     @Nonnull
-    <T> ServiceBeanStorage put(@Nonnull Class<T> serviceBeanInterface, @Nonnull ServiceBeanProvider<T> serviceBeanProvider);
+    <T> ServiceBeanStorage put(@Nonnull Class<? extends T> serviceBeanInterface,
+                               @Nonnull ServiceBeanProvider<? extends T> serviceBeanProvider);
 }

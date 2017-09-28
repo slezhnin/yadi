@@ -21,7 +21,7 @@ public class SimpleServiceBeanProvider<T> implements ServiceBeanProvider<T> {
     }
 
     @Nonnull
-    public static <T> ServiceBeanProvider<T> provider(@Nonnull final Class<T> implementation,@Nonnull final Class<?>... dependencies) {
+    public static <T> ServiceBeanProvider<T> provider(@Nonnull final Class<T> implementation, @Nonnull final Class<?>... dependencies) {
         return new SimpleServiceBeanProvider<>(implementation, dependencies);
     }
 

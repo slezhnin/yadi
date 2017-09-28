@@ -17,11 +17,11 @@ public class SimpleServiceBeanBinder implements ServiceBeanBinder {
 
     @Nonnull
     @Override
-    public <T> ServiceBeanImplementor<T> bind(@Nonnull final Class<T> serviceBeanInterface) {
+    public <T> ServiceBeanImplementor<T> bind(@Nonnull final Class<? extends T> serviceBeanInterface) {
         return new ServiceBeanImplementor<T>() {
             @Nonnull
             @Override
-            public ServiceBeanBinder to(@Nonnull final ServiceBeanProvider<T> serviceBeanProvider) {
+            public ServiceBeanBinder to(@Nonnull final ServiceBeanProvider<? extends T> serviceBeanProvider) {
                 serviceBeanStorage.put(requireNonNull(serviceBeanInterface), requireNonNull(serviceBeanProvider));
                 return SimpleServiceBeanBinder.this;
             }

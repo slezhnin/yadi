@@ -4,8 +4,9 @@ import static com.lezhnin.yadi.simple.ConstructorDependency.constructor;
 import static com.lezhnin.yadi.simple.MethodDependency.method;
 import static com.lezhnin.yadi.simple.SimpleModule.simpleModule;
 import static com.lezhnin.yadi.simple.SimpleServiceProvider.provider;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import com.lezhnin.yadi.api.ServiceLocator;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class SimpleModuleTest {
@@ -29,9 +30,9 @@ class SimpleModuleTest {
 
         final A actual = module.locate(A.class);
 
-        assertNotNull(actual);
-        assertNotNull(actual.getB());
-        assertNotNull(actual.getC());
+        assertThat(actual).isNotNull();
+        assertThat(actual.getB()).isNotNull();
+        assertThat(actual.getC()).isNotNull();
     }
 
     @Test
@@ -45,14 +46,44 @@ class SimpleModuleTest {
 
         final A actual = module.locate(A.class);
 
-        assertNotNull(actual);
-        assertNotNull(actual.getB());
-        assertNotNull(actual.getC());
-        assertNotNull(actual.getC().getB());
+        assertThat(actual).isNotNull();
+        assertThat(actual.getB()).isNotNull();
+        assertThat(actual.getC()).isNotNull();
+        assertThat(actual.getC().getB()).isNotNull();
+    }
+
+    @Disabled
+    @Test
+    void test3() {
+        final ServiceLocator module = new SimpleModule() {
+            @Override
+            protected void doBind() {
+                bind(A.class).to(provider(A.class, constructor(B.class, C.class)));
+                bind(B.class).to(provider(B.class, method(B.class, "setA", A.class)));
+                bind(C.class).to(provider(C.class, method(C.class, "setB", B.class)));
+            }
+        };
+
+        final A actual = module.locate(A.class);
+
+        assertThat(actual).isNotNull();
+        assertThat(actual.getB()).isNotNull();
+        assertThat(actual.getB().getA()).isNotNull();
+        assertThat(actual.getC()).isNotNull();
+        assertThat(actual.getC().getB()).isNotNull();
     }
 
     public static class B {
 
+        private A a;
+
+        public A getA() {
+            return a;
+        }
+
+        public void setA(final A a) {
+            this.a = a;
+        }
     }
 
     public static class C {

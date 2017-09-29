@@ -1,7 +1,7 @@
 package com.lezhnin.yadi.annotated;
 
 import static com.lezhnin.yadi.annotated.PackageScanModule.fromPackage;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import com.lezhnin.yadi.api.ServiceLocator;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -15,10 +15,10 @@ class PackageScanModuleTest {
 
         final A actual = module.locate(A.class);
 
-        assertNotNull(actual);
-        assertNotNull(actual.getB());
-        assertNotNull(actual.getC());
-        assertNotNull(actual.getC().getB());
+        assertThat(actual).isNotNull();
+        assertThat(actual.getB()).isNotNull();
+        assertThat(actual.getC()).isNotNull();
+        assertThat(actual.getC().getB()).isNotNull();
     }
 
     @Named

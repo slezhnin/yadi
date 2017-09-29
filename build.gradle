@@ -1,12 +1,6 @@
 group 'com.lezhnin'
 version '1.0-SNAPSHOT'
 
-ext.libraries = [
-        jsr305            : 'com.google.code.findbugs:jsr305:3.0.2',
-        junitJupiterApi   : 'org.junit.jupiter:junit-jupiter-api:5.0.0',
-        junitJupiterEngine: 'org.junit.jupiter:junit-jupiter-engine:5.0.0'
-]
-
 buildscript {
     repositories {
         mavenCentral()
@@ -30,8 +24,9 @@ subprojects {
     }
 
     dependencies {
-        testCompile libraries.junitJupiterApi
-        testRuntime libraries.junitJupiterEngine
+        testCompile 'org.assertj:assertj-core:3.8.0'
+        testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0'
+        testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.0'
     }
 }
 
@@ -40,5 +35,5 @@ repositories {
 }
 
 dependencies {
-    testRuntime libraries.junitJupiterEngine
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.0'
 }

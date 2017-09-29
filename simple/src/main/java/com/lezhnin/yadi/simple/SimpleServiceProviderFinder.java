@@ -1,8 +1,8 @@
 package com.lezhnin.yadi.simple;
 
 import static java.util.Objects.requireNonNull;
-import com.lezhnin.yadi.api.ServiceProviderFinder;
 import com.lezhnin.yadi.api.ServiceProvider;
+import com.lezhnin.yadi.api.ServiceProviderFinder;
 import com.lezhnin.yadi.api.ServiceStorage;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

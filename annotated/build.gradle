@@ -1,17 +1,8 @@
 group 'com.lezhnin'
 version '1.0-SNAPSHOT'
 
-apply plugin: 'java'
-
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     compile project(':yadi-simple')
     compile 'org.reflections:reflections:0.9.11'
-    testCompile libraries.junitJupiterApi
-    testRuntime libraries.junitJupiterEngine
+    compile 'javax.inject:javax.inject:1'
 }

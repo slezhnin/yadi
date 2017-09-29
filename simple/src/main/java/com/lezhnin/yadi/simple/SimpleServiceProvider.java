@@ -1,13 +1,12 @@
 package com.lezhnin.yadi.simple;
 
+import static com.lezhnin.yadi.simple.ConstructorDependency.constructor;
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import com.lezhnin.yadi.api.ServiceConstructionException;
 import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.api.ServiceProvider;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class SimpleServiceProvider<T> implements ServiceProvider<T> {
 
@@ -24,26 +23,6 @@ public class SimpleServiceProvider<T> implements ServiceProvider<T> {
         methodDependencies = findMethodDependencies(dependencies);
     }
 
-    private MethodDependency[] findMethodDependencies(final ServiceDependency[] dependencies) {
-        List<MethodDependency> methodDependencies = new ArrayList<>(dependencies.length);
-        for (ServiceDependency dependency : dependencies) {
-            if (dependency instanceof MethodDependency) {
-                methodDependencies.add((MethodDependency) dependency);
-            }
-        }
-        return methodDependencies.toArray(new MethodDependency[methodDependencies.size()]);
-    }
-
-    @Nullable
-    private ConstructorDependency findConstructorDependency(final ServiceDependency[] dependencies) {
-        for (ServiceDependency dependency : dependencies) {
-            if (dependency instanceof ConstructorDependency) {
-                return (ConstructorDependency) dependency;
-            }
-        }
-        return null;
-    }
-
     @Nonnull
     public static <T> ServiceProvider<T> provider(@Nonnull final Class<T> implementation, @Nonnull final ServiceDependency... dependencies) {
         return new SimpleServiceProvider<>(implementation, dependencies);
@@ -52,29 +31,41 @@ public class SimpleServiceProvider<T> implements ServiceProvider<T> {
     @Nonnull
     @Override
     public T provide(@Nonnull final ServiceLocator serviceLocator) {
+        return runMethods(getInstance(serviceLocator), serviceLocator);
+    }
+
+    private T getInstance(final @Nonnull ServiceLocator serviceLocator) {
         try {
-            final T instance = constructorDependency == null ?
-                    implementation.newInstance() :
-                    implementation.getConstructor(
-                            constructorDependency.getDependencies()
-                    ).newInstance(parameters(serviceLocator, constructorDependency.getDependencies()));
-            for (MethodDependency methodDependency : methodDependencies) {
-                methodDependency.getMethod().invoke(
-                        instance,
-                        parameters(serviceLocator, methodDependency.getDependencies())
-                );
-            }
-            return instance;
+            return implementation.getConstructor(constructorDependency.getDependencies())
+                                 .newInstance(parameters(serviceLocator, constructorDependency.getDependencies()));
         } catch (Exception e) {
             throw new ServiceConstructionException(implementation, e);
         }
     }
 
+    private T runMethods(T instance, final ServiceLocator serviceLocator) {
+        stream(methodDependencies).forEach(md -> {
+            try {
+                md.getMethod().invoke(instance, parameters(serviceLocator, md.getDependencies()));
+            } catch (Exception e) {
+                throw new ServiceConstructionException(implementation, e);
+            }
+        });
+        return instance;
+    }
+
+    private MethodDependency[] findMethodDependencies(final ServiceDependency[] dependencies) {
+        return stream(dependencies).filter(d -> d instanceof MethodDependency).toArray(MethodDependency[]::new);
+    }
+
+    @Nonnull
+    private ConstructorDependency findConstructorDependency(final ServiceDependency[] dependencies) {
+        return (ConstructorDependency) stream(dependencies)
+                .filter(d -> d instanceof ConstructorDependency)
+                .findFirst().orElse(constructor());
+    }
+
     private Object[] parameters(final ServiceLocator serviceLocator, final Class<?>[] dependencies) {
-        final Object[] parameters = new Object[dependencies.length];
-        for (int i = 0; i < dependencies.length; i++) {
-            parameters[i] = serviceLocator.locate(dependencies[i]);
-        }
-        return parameters;
+        return stream(dependencies).map(serviceLocator::locate).toArray();
     }
 }

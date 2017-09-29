@@ -10,6 +10,47 @@ import org.junit.jupiter.api.Test;
 
 class SimpleModuleTest {
 
+    @Test
+    void test1() {
+        final ServiceLocator parent = new SimpleModule() {
+            @Override
+            protected void doBind() {
+                bind(B.class).to(provider(B.class));
+            }
+        };
+
+        final ServiceLocator module = new SimpleModule(parent) {
+            @Override
+            protected void doBind() {
+                bind(A.class).to(provider(A.class, constructor(B.class, C.class)));
+                bind(C.class).to(provider(C.class, method(C.class, "setB", B.class)));
+            }
+        };
+
+        final A actual = module.locate(A.class);
+
+        assertNotNull(actual);
+        assertNotNull(actual.getB());
+        assertNotNull(actual.getC());
+    }
+
+    @Test
+    void test2() {
+        final SimpleModule parent = simpleModule();
+        parent.bind(B.class).to(provider(B.class));
+
+        final SimpleModule module = simpleModule(parent);
+        module.bind(A.class).to(provider(A.class, constructor(B.class, C.class)))
+              .bind(C.class).to(provider(C.class, method(C.class, "setB", B.class)));
+
+        final A actual = module.locate(A.class);
+
+        assertNotNull(actual);
+        assertNotNull(actual.getB());
+        assertNotNull(actual.getC());
+        assertNotNull(actual.getC().getB());
+    }
+
     public static class B {
 
     }
@@ -44,45 +85,5 @@ class SimpleModuleTest {
         C getC() {
             return c;
         }
-    }
-
-    @Test
-    void test1() {
-        final ServiceLocator parent = new SimpleModule() {
-            @Override
-            protected void doBind() {
-                bind(B.class).to(provider(B.class));
-            }
-        };
-
-        final ServiceLocator module = new SimpleModule(parent) {
-            @Override
-            protected void doBind() {
-                bind(A.class).to(provider(A.class, constructor(B.class, C.class)));
-                bind(C.class).to(provider(C.class, method(C.class, "setB", B.class)));
-            }
-        };
-
-        final A actual = module.locate(A.class);
-
-        assertNotNull(actual);
-        assertNotNull(actual.getB());
-        assertNotNull(actual.getC());
-    }
-
-    @Test
-    void test2() {
-        final SimpleModule parent = simpleModule();
-        parent.bind(B.class).to(provider(B.class));
-
-        final SimpleModule module = simpleModule(parent);
-        module.bind(A.class).to(provider(A.class, constructor(B.class, C.class)))
-              .bind(C.class).to(provider(C.class));
-
-        final A actual = module.locate(A.class);
-
-        assertNotNull(actual);
-        assertNotNull(actual.getB());
-        assertNotNull(actual.getC());
     }
 }

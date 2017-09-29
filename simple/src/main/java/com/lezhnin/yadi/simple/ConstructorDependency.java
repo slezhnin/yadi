@@ -8,7 +8,7 @@ public class ConstructorDependency extends ServiceDependency {
         super(dependencies);
     }
 
-    public static ServiceDependency constructor(@Nonnull final Class<?>... dependencies) {
+    public static ConstructorDependency constructor(@Nonnull final Class<?>... dependencies) {
         return new ConstructorDependency(dependencies);
     }
 }

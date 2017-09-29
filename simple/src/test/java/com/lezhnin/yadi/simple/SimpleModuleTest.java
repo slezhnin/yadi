@@ -1,5 +1,7 @@
 package com.lezhnin.yadi.simple;
 
+import static com.lezhnin.yadi.simple.ConstructorDependency.constructor;
+import static com.lezhnin.yadi.simple.MethodDependency.method;
 import static com.lezhnin.yadi.simple.SimpleModule.simpleModule;
 import static com.lezhnin.yadi.simple.SimpleServiceProvider.provider;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -14,6 +16,15 @@ class SimpleModuleTest {
 
     public static class C {
 
+        private B b;
+
+        public B getB() {
+            return b;
+        }
+
+        public void setB(final B b) {
+            this.b = b;
+        }
     }
 
     public static class A {
@@ -47,8 +58,8 @@ class SimpleModuleTest {
         final ServiceLocator module = new SimpleModule(parent) {
             @Override
             protected void doBind() {
-                bind(A.class).to(provider(A.class, B.class, C.class));
-                bind(C.class).to(provider(C.class));
+                bind(A.class).to(provider(A.class, constructor(B.class, C.class)));
+                bind(C.class).to(provider(C.class, method(C.class, "setB", B.class)));
             }
         };
 
@@ -65,7 +76,7 @@ class SimpleModuleTest {
         parent.bind(B.class).to(provider(B.class));
 
         final SimpleModule module = simpleModule(parent);
-        module.bind(A.class).to(provider(A.class, B.class, C.class))
+        module.bind(A.class).to(provider(A.class, constructor(B.class, C.class)))
               .bind(C.class).to(provider(C.class));
 
         final A actual = module.locate(A.class);

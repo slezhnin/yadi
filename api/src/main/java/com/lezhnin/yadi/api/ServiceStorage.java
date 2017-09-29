@@ -6,9 +6,9 @@ import javax.annotation.Nullable;
 public interface ServiceStorage {
 
     @Nullable
-    <T> ServiceProvider<T> get(@Nonnull Class<T> serviceBeanInterface);
+    <T> ServiceProvider<T> get(@Nonnull String serviceId);
 
     @Nonnull
-    <T> ServiceStorage put(@Nonnull Class<? extends T> serviceBeanInterface,
+    <T> ServiceStorage put(@Nonnull String serviceId,
                            @Nonnull ServiceProvider<? extends T> serviceProvider);
 }

@@ -6,5 +6,8 @@ import javax.annotation.Nullable;
 public interface ServiceProviderFinder {
 
     @Nullable
-    <T> ServiceProvider<T> find(@Nonnull Class<T> serviceBean);
+    <T> ServiceProvider<T> find(@Nonnull String serviceId);
+
+    @Nullable
+    <T> ServiceProvider<T> find(@Nonnull Class<T> serviceInterface);
 }

@@ -10,6 +10,7 @@ import static java.util.stream.Stream.of;
 import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.simple.ServiceDependency;
 import com.lezhnin.yadi.simple.SimpleModule;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -39,18 +40,15 @@ public class PackageScanModule extends SimpleModule {
         final Reflections reflections = new Reflections(packagePrefix);
         final Set<Class<?>> namedClasses = reflections.getTypesAnnotatedWith(Named.class);
         for (Class<?> namedClass : namedClasses) {
-            final Class<?>[] implementedServiceInterfaces = (
-                    namedClass.getInterfaces().length != 0 ?
-                            namedClass.getInterfaces() :
-                            new Class<?>[]{namedClass}
-            );
-            final ServiceDependency[] dependencies = findDependencies(
-                    namedClass
-            );
-            for (Class implementedServiceInterface : implementedServiceInterfaces) {
-                bind(implementedServiceInterface).to(provider(namedClass, dependencies));
-            }
+            bind(nameOf(namedClass)).to(provider(namedClass, findDependencies(namedClass)));
         }
+    }
+
+    private String nameOf(final Class<?> namedClass) {
+        return Optional.ofNullable(namedClass.getAnnotation(Named.class))
+                       .filter(named -> !named.value().isEmpty())
+                       .map(Named::value)
+                       .orElse(namedClass.getName());
     }
 
     private ServiceDependency[] findDependencies(final Class<?> annotatedServiceClass) {

@@ -32,8 +32,14 @@ public class SimpleModule extends SimpleServiceLocator implements ServiceBinder 
 
     @Nonnull
     @Override
-    public <T> ServiceImplementor<T> bind(@Nonnull final Class<? extends T> serviceBeanInterface) {
-        return serviceBinder.bind(requireNonNull(serviceBeanInterface));
+    public <T> ServiceImplementor<T> bind(@Nonnull final String serviceId) {
+        return serviceBinder.bind(requireNonNull(serviceId));
+    }
+
+    @Nonnull
+    @Override
+    public <T> ServiceImplementor<T> bind(@Nonnull final Class<T> serviceInterface) {
+        return serviceBinder.bind(requireNonNull(serviceInterface));
     }
 
     protected void doBind() {

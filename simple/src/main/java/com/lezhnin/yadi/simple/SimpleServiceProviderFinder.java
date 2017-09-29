@@ -17,7 +17,13 @@ public class SimpleServiceProviderFinder implements ServiceProviderFinder {
 
     @Nullable
     @Override
-    public <T> ServiceProvider<T> find(@Nonnull final Class<T> serviceBean) {
-        return serviceStorage.get(serviceBean);
+    public <T> ServiceProvider<T> find(@Nonnull final String serviceId) {
+        return serviceStorage.get(serviceId);
+    }
+
+    @Nullable
+    @Override
+    public <T> ServiceProvider<T> find(@Nonnull final Class<T> serviceInterface) {
+        return serviceStorage.get(serviceInterface.getName());
     }
 }

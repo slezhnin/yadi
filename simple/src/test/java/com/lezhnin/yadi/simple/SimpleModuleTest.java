@@ -28,7 +28,7 @@ class SimpleModuleTest {
             }
         };
 
-        final A actual = module.locate(A.class);
+        final A actual = module.locate(A.class).get();
 
         assertThat(actual).isNotNull();
         assertThat(actual.getB()).isNotNull();
@@ -44,7 +44,7 @@ class SimpleModuleTest {
         module.bind(A.class).to(provider(A.class, constructor(B.class, C.class)))
               .bind(C.class).to(provider(C.class, method(C.class, "setB", B.class)));
 
-        final A actual = module.locate(A.class);
+        final A actual = module.locate(A.class).get();
 
         assertThat(actual).isNotNull();
         assertThat(actual.getB()).isNotNull();
@@ -64,7 +64,7 @@ class SimpleModuleTest {
             }
         };
 
-        final A actual = module.locate(A.class);
+        final A actual = module.locate(A.class).get();
 
         assertThat(actual).isNotNull();
         assertThat(actual.getB()).isNotNull();

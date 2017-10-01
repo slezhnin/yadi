@@ -13,7 +13,7 @@ class PackageScanModuleTest {
     void testFromPackage() {
         ServiceLocator module = fromPackage(getClass().getPackage());
 
-        final A actual = module.locate(A.class);
+        final A actual = module.locate(A.class).get();
 
         assertThat(actual).isNotNull();
         assertThat(actual.getB()).isNotNull();

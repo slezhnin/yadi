@@ -1,12 +1,14 @@
 package com.lezhnin.yadi.simple;
 
+import com.lezhnin.yadi.api.ServiceLocator;
+import com.lezhnin.yadi.api.ServiceProvider;
+
+import javax.annotation.Nonnull;
+import java.util.function.Supplier;
+
 import static com.lezhnin.yadi.simple.ConstructorDependency.constructor;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
-import com.lezhnin.yadi.api.ServiceConstructionException;
-import com.lezhnin.yadi.api.ServiceLocator;
-import com.lezhnin.yadi.api.ServiceProvider;
-import javax.annotation.Nonnull;
 
 public class SimpleServiceProvider<T> implements ServiceProvider<T> {
 
@@ -30,28 +32,16 @@ public class SimpleServiceProvider<T> implements ServiceProvider<T> {
 
     @Nonnull
     @Override
-    public T provide(@Nonnull final ServiceLocator serviceLocator) {
+    public Supplier<T> apply(@Nonnull final ServiceLocator serviceLocator) {
         return runMethods(getInstance(serviceLocator), serviceLocator);
     }
 
-    private T getInstance(final @Nonnull ServiceLocator serviceLocator) {
-        try {
-            return implementation.getConstructor(constructorDependency.getDependencies())
-                                 .newInstance(parameters(serviceLocator, constructorDependency.getDependencies()));
-        } catch (Exception e) {
-            throw new ServiceConstructionException(implementation, e);
-        }
+    private Supplier<T> getInstance(final @Nonnull ServiceLocator serviceLocator) {
+        return new SimpleInstanceSupplier<>(serviceLocator, implementation, constructorDependency.getDependencies());
     }
 
-    private T runMethods(T instance, final ServiceLocator serviceLocator) {
-        stream(methodDependencies).forEach(md -> {
-            try {
-                md.getMethod().invoke(instance, parameters(serviceLocator, md.getDependencies()));
-            } catch (Exception e) {
-                throw new ServiceConstructionException(implementation, e);
-            }
-        });
-        return instance;
+    private Supplier<T> runMethods(Supplier<T> instanceSupplier, final ServiceLocator serviceLocator) {
+        return new SimpleServiceSupplier<>(serviceLocator, instanceSupplier, methodDependencies);
     }
 
     private MethodDependency[] findMethodDependencies(final ServiceDependency[] dependencies) {

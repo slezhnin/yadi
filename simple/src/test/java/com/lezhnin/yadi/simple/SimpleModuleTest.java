@@ -2,10 +2,12 @@ package com.lezhnin.yadi.simple;
 
 import static com.lezhnin.yadi.simple.ConstructorDependency.constructor;
 import static com.lezhnin.yadi.simple.MethodDependency.method;
+import static com.lezhnin.yadi.simple.MethodDependency.methodOf;
 import static com.lezhnin.yadi.simple.SimpleModule.simpleModule;
 import static com.lezhnin.yadi.simple.SimpleServiceProvider.provider;
 import static org.assertj.core.api.Assertions.assertThat;
 import com.lezhnin.yadi.api.ServiceLocator;
+import javax.annotation.Nonnull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -20,13 +22,28 @@ class SimpleModuleTest {
             }
         };
 
-        final ServiceLocator module = new SimpleModule(parent) {
+        class Module extends SimpleModule {
+
+            public Module() {
+                super(parent);
+            }
+
+            public A createA(final B b, final C c) {
+                return new A(b, c);
+            }
+
             @Override
             protected void doBind() {
-                bind(A.class).to(provider(A.class, constructor(B.class, C.class)));
-                bind(C.class).to(provider(C.class, method(C.class, "setB", B.class)));
+                // bind(A.class).to(provider(A.class, constructor(B.class, C.class)));
+                bind(A.class).to(provider(
+                        A.class, Module.this,
+                        methodOf(Module.this, "createA", B.class, C.class)
+                ));
+                bind(C.class).to(provider(C.class, method(C.class, "setB", null, B.class)));
             }
         };
+
+        final ServiceLocator module = new Module();
 
         final A actual = module.locate(A.class).get();
 
@@ -42,7 +59,7 @@ class SimpleModuleTest {
 
         final SimpleModule module = simpleModule(parent);
         module.bind(A.class).to(provider(A.class, constructor(B.class, C.class)))
-              .bind(C.class).to(provider(C.class, method(C.class, "setB", B.class)));
+              .bind(C.class).to(provider(C.class, method(C.class, "setB", null, B.class)));
 
         final A actual = module.locate(A.class).get();
 
@@ -59,8 +76,8 @@ class SimpleModuleTest {
             @Override
             protected void doBind() {
                 bind(A.class).to(provider(A.class, constructor(B.class, C.class)));
-                bind(B.class).to(provider(B.class, method(B.class, "setA", A.class)));
-                bind(C.class).to(provider(C.class, method(C.class, "setB", B.class)));
+                bind(B.class).to(provider(B.class, method(B.class, "setA", null, A.class)));
+                bind(C.class).to(provider(C.class, method(C.class, "setB", null, B.class)));
             }
         };
 
@@ -71,6 +88,13 @@ class SimpleModuleTest {
         assertThat(actual.getB().getA()).isNotNull();
         assertThat(actual.getC()).isNotNull();
         assertThat(actual.getC().getB()).isNotNull();
+    }
+
+    public static class Amodule {
+
+        public A createA(final B b, final C c) {
+            return new A(b, c);
+        }
     }
 
     public static class B {

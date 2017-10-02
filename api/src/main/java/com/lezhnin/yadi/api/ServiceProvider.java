@@ -1,10 +1,7 @@
 package com.lezhnin.yadi.api;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
-public interface ServiceProvider<T> {
-
-    @Nonnull
-    T provide(@Nonnull ServiceLocator serviceLocator);
+public interface ServiceProvider<T> extends Function<ServiceLocator, Supplier<T>> {
 }

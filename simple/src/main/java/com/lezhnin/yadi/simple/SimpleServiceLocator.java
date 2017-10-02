@@ -1,13 +1,16 @@
 package com.lezhnin.yadi.simple;
 
-import static java.util.Objects.requireNonNull;
 import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.api.ServiceNotFoundException;
 import com.lezhnin.yadi.api.ServiceProvider;
 import com.lezhnin.yadi.api.ServiceProviderFinder;
-import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.function.Supplier;
+
+import static java.util.Objects.requireNonNull;
 
 public class SimpleServiceLocator implements ServiceLocator {
 
@@ -25,15 +28,15 @@ public class SimpleServiceLocator implements ServiceLocator {
 
     @Nullable
     @Override
-    public <T> T locate(@Nonnull final Class<T> beanType) {
+    public <T> Supplier<T> locate(@Nonnull final Class<T> beanType) {
         final ServiceProvider<T> provider = serviceProviderFinder.find(requireNonNull(beanType));
         if (provider != null) {
-            return provider.provide(this);
+            return provider.apply(this);
         }
         for (ServiceLocator parent : parents) {
-            final T serviceBean = parent.locate(beanType);
-            if (serviceBean != null) {
-                return serviceBean;
+            final Supplier<T> serviceSupplier = parent.locate(beanType);
+            if (serviceSupplier != null) {
+                return serviceSupplier;
             }
         }
         throw new ServiceNotFoundException(beanType, this);

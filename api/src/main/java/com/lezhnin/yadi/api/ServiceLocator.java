@@ -2,9 +2,10 @@ package com.lezhnin.yadi.api;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 public interface ServiceLocator {
 
     @Nullable
-    <T> T locate(@Nonnull Class<T> beanType);
+    <T> Supplier<T> locate(@Nonnull Class<T> beanType);
 }

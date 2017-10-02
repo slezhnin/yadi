@@ -1,28 +1,53 @@
 package com.lezhnin.yadi.annotated;
 
 import static com.lezhnin.yadi.annotated.PackageScanModule.fromPackage;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import com.lezhnin.yadi.api.ServiceLocator;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.junit.jupiter.api.Test;
 
 class PackageScanModuleTest {
 
-    @Service
+    @Test
+    void testFromPackage() {
+        ServiceLocator module = fromPackage(getClass().getPackage());
+
+        final A actual = module.locate(A.class).get();
+
+        assertThat(actual).isNotNull();
+        assertThat(actual.getB()).isNotNull();
+        assertThat(actual.getC()).isNotNull();
+        assertThat(actual.getC().getB()).isNotNull();
+    }
+
+    @Named
     public static class B {
 
     }
 
-    @Service
+    @Named
     public static class C {
 
+        private B b;
+
+        public B getB() {
+            return b;
+        }
+
+        @Inject
+        public void setB(final B b) {
+            this.b = b;
+        }
     }
 
-    @Service(dependencies = {B.class, C.class})
+    @Named
     public static class A {
 
         private final B b;
         private final C c;
 
+        @Inject
         public A(final B b, final C c) {
             this.b = b;
             this.c = c;
@@ -35,16 +60,5 @@ class PackageScanModuleTest {
         C getC() {
             return c;
         }
-    }
-
-    @Test
-    void testFromPackage() {
-        ServiceLocator module = fromPackage(getClass().getPackage());
-
-        final A actual = module.locate(A.class);
-
-        assertNotNull(actual);
-        assertNotNull(actual.getB());
-        assertNotNull(actual.getC());
     }
 }

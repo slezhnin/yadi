@@ -5,5 +5,8 @@ import javax.annotation.Nonnull;
 public interface ServiceBinder {
 
     @Nonnull
-    <T> ServiceImplementor<T> bind(@Nonnull Class<? extends T> serviceBeanInterface);
+    <T> ServiceImplementor<T> bind(@Nonnull String serviceId);
+
+    @Nonnull
+    <T> ServiceImplementor<T> bind(@Nonnull Class<T> serviceInterface);
 }

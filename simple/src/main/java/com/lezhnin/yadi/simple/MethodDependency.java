@@ -2,6 +2,7 @@ package com.lezhnin.yadi.simple;
 
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
+import com.lezhnin.yadi.api.MethodNotFoundException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import javax.annotation.Nonnull;

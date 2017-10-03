@@ -3,10 +3,10 @@ package com.lezhnin.yadi.simple;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import com.lezhnin.yadi.api.ServiceBinder;
-import com.lezhnin.yadi.api.ServiceImplementor;
 import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.api.ServiceStorage;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class SimpleModule extends SimpleServiceLocator implements ServiceBinder {
 
@@ -14,10 +14,10 @@ public class SimpleModule extends SimpleServiceLocator implements ServiceBinder 
 
     protected SimpleModule(@Nonnull ServiceStorage storage, @Nonnull ServiceLocator... parents) {
         super(
-                new SimpleServiceProviderFinder(requireNonNull(storage)),
+                new SimpleServiceFinder(requireNonNull(storage)),
                 asList(requireNonNull(parents))
         );
-        serviceBinder = new SimpleServiceBinder(storage);
+        serviceBinder = ServiceBinder.binder(storage);
         doBind();
     }
 
@@ -32,14 +32,8 @@ public class SimpleModule extends SimpleServiceLocator implements ServiceBinder 
 
     @Nonnull
     @Override
-    public <T> ServiceImplementor<T> bind(@Nonnull final String serviceId) {
-        return serviceBinder.bind(requireNonNull(serviceId));
-    }
-
-    @Nonnull
-    @Override
-    public <T> ServiceImplementor<T> bind(@Nonnull final Class<T> serviceInterface) {
-        return serviceBinder.bind(requireNonNull(serviceInterface));
+    public <T> ToSupplier<T> bind(@Nonnull final Class<T> serviceType, @Nullable final String serviceId) {
+        return serviceBinder.bind(serviceType, serviceId);
     }
 
     protected void doBind() {

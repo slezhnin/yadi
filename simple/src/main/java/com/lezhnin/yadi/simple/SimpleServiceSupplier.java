@@ -1,38 +1,88 @@
 package com.lezhnin.yadi.simple;
 
-import com.lezhnin.yadi.api.ServiceConstructionException;
-import com.lezhnin.yadi.api.ServiceLocator;
-
-import java.util.function.Supplier;
-
+import static com.lezhnin.yadi.simple.ConstructorDependency.constructor;
+import static com.lezhnin.yadi.simple.MethodDependency.method;
 import static java.util.Arrays.stream;
+import static java.util.Objects.requireNonNull;
+import com.lezhnin.yadi.api.ServiceLocator;
+import com.lezhnin.yadi.api.ServiceSupplier;
+import java.lang.reflect.Method;
+import java.util.function.Supplier;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class SimpleServiceSupplier<T> implements Supplier<T> {
+public class SimpleServiceSupplier<T> implements ServiceSupplier<T> {
 
-    private final ServiceLocator serviceLocator;
-    private final Supplier<T> instanceSupplier;
+    private final Class<T> implementation;
     private final MethodDependency[] methodDependencies;
+    private final ServiceDependency constructorDependency;
 
-    public SimpleServiceSupplier(ServiceLocator serviceLocator, Supplier<T> instanceSupplier, MethodDependency[] methodDependencies) {
-        this.serviceLocator = serviceLocator;
-        this.instanceSupplier = instanceSupplier;
-        this.methodDependencies = methodDependencies;
+    private SimpleServiceSupplier(@Nonnull final Class<T> implementation,
+                                  @Nonnull final ServiceDependency... dependencies) {
+        this.implementation = requireNonNull(implementation);
+        for (ServiceDependency dependency : dependencies) {
+            requireNonNull(dependency);
+        }
+        constructorDependency = findConstructorDependency(dependencies);
+        methodDependencies = findMethodDependencies(dependencies);
     }
 
+    private SimpleServiceSupplier(@Nonnull final Class<T> implementation,
+                                  @Nullable Object instance,
+                                  @Nonnull final Method method,
+                                  @Nonnull final ServiceDependency... dependencies) {
+        this.implementation = requireNonNull(implementation);
+        for (ServiceDependency dependency : dependencies) {
+            requireNonNull(dependency);
+        }
+        constructorDependency = method(method, instance);
+        methodDependencies = findMethodDependencies(dependencies);
+    }
+
+    @Nonnull
+    public static <T> ServiceSupplier<T> provider(@Nonnull final Class<T> implementation,
+                                                  @Nonnull final ServiceDependency... dependencies) {
+        return new SimpleServiceSupplier<>(implementation, dependencies);
+    }
+
+    @Nonnull
+    public static <T> ServiceSupplier<T> provider(@Nonnull final Class<T> implementation,
+                                                  @Nullable Object instance,
+                                                  @Nonnull final Method method,
+                                                  @Nonnull final ServiceDependency... dependencies) {
+        return new SimpleServiceSupplier<>(implementation, instance, method, dependencies);
+    }
+
+    @Nonnull
     @Override
-    public T get() {
-        final T instance = instanceSupplier.get();
-        stream(methodDependencies).forEach(md -> {
-            try {
-                md.getMethod().invoke(instance, parameters(serviceLocator, md.getDependencies()));
-            } catch (Exception e) {
-                throw new ServiceConstructionException(instance.getClass(), e);
-            }
-        });
-        return instance;
+    public Supplier<T> apply(@Nonnull final ServiceLocator serviceLocator) {
+        return runMethods(getInstance(serviceLocator), serviceLocator);
     }
 
-    private Object[] parameters(final ServiceLocator serviceLocator, final Class<?>[] dependencies) {
-        return stream(dependencies).map(serviceLocator::locate).map(Supplier::get).toArray();
+    private Supplier<T> getInstance(final @Nonnull ServiceLocator serviceLocator) {
+        if (constructorDependency instanceof ConstructorDependency) {
+            return new SimpleInstanceSupplier<>(serviceLocator, implementation, constructorDependency.getDependencies());
+        }
+        return new SimpleInstanceFromMethodSupplier<>(
+                serviceLocator,
+                implementation,
+                ((MethodDependency) constructorDependency).getMethod(),
+                ((MethodDependency) constructorDependency).getInstance()
+        );
+    }
+
+    private Supplier<T> runMethods(Supplier<T> instanceSupplier, final ServiceLocator serviceLocator) {
+        return new SimpleServiceSupplier2<>(serviceLocator, instanceSupplier, methodDependencies);
+    }
+
+    private MethodDependency[] findMethodDependencies(final ServiceDependency[] dependencies) {
+        return stream(dependencies).filter(d -> d instanceof MethodDependency).toArray(MethodDependency[]::new);
+    }
+
+    @Nonnull
+    private ConstructorDependency findConstructorDependency(final ServiceDependency[] dependencies) {
+        return (ConstructorDependency) stream(dependencies)
+                .filter(d -> d instanceof ConstructorDependency)
+                .findFirst().orElse(constructor());
     }
 }

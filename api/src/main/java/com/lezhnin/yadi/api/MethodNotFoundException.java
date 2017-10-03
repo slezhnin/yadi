@@ -1,4 +1,4 @@
-package com.lezhnin.yadi.simple;
+package com.lezhnin.yadi.api;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;

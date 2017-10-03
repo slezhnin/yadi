@@ -7,7 +7,6 @@ import static com.lezhnin.yadi.simple.SimpleModule.simpleModule;
 import static com.lezhnin.yadi.simple.SimpleServiceProvider.provider;
 import static org.assertj.core.api.Assertions.assertThat;
 import com.lezhnin.yadi.api.ServiceLocator;
-import javax.annotation.Nonnull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

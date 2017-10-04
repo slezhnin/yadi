@@ -40,15 +40,19 @@ public interface Dependency {
         @Nonnull
         Method getMethod();
 
-        static MethodDependency method(@Nonnull final Method method) {
-            return method(
+        static MethodDependency methodFromClass(@Nonnull final Method method) {
+            return methodFromClass(
                     requireNonNull(method).getDeclaringClass(),
                     method.getName(),
                     fromTypes(method.getParameterTypes())
             );
         }
 
-        static Method findMethod(@Nonnull final Class<?> from, @Nonnull final String name, @Nonnull final Class<?>... parameters) {
+        static Method findMethodInClass(
+                @Nonnull final Class<?> from,
+                @Nonnull final String name,
+                @Nonnull final Class<?>... parameters
+        ) {
             try {
                 return requireNonNull(from).getMethod(requireNonNull(name), requireNonNull(parameters));
             } catch (final NoSuchMethodException e) {
@@ -56,14 +60,59 @@ public interface Dependency {
             }
         }
 
-        static MethodDependency method(@Nonnull final Class<?> from,
-                                       @Nonnull final String name,
-                                       @Nonnull final ServiceReference<?>... parameters) {
+        static MethodDependency methodFromClass(
+                @Nonnull final Class<?> from,
+                @Nonnull final String name,
+                @Nonnull final ServiceReference<?>... parameters
+        ) {
             return new MethodDependency() {
                 @Nonnull
                 @Override
                 public Method getMethod() {
-                    return MethodDependency.findMethod(requireNonNull(from), requireNonNull(name), toTypes(parameters));
+                    return MethodDependency.findMethodInClass(requireNonNull(from), requireNonNull(name), toTypes(parameters));
+                }
+
+                @Nonnull
+                @Override
+                public ServiceReference<?>[] getReferences() {
+                    return requireNonNull(parameters);
+                }
+            };
+        }
+    }
+
+    interface InstanceMethodDependency<T> extends MethodDependency {
+
+        @Nonnull
+        T getInstance();
+
+        static <T> InstanceMethodDependency<T> methodFromInstance(
+                @Nonnull final T instance,
+                @Nonnull final Method method
+        ) {
+            return methodFromInstance(
+                    requireNonNull(instance),
+                    method.getName(),
+                    fromTypes(method.getParameterTypes())
+            );
+        }
+
+        static <T> InstanceMethodDependency<T> methodFromInstance(
+                @Nonnull final T instance,
+                @Nonnull final String name,
+                @Nonnull final ServiceReference<?>... parameters
+        ) {
+            return new InstanceMethodDependency<T>() {
+                @Nonnull
+                @Override
+                public T getInstance() {
+                    return requireNonNull(instance);
+                }
+
+                @Nonnull
+                @Override
+                public Method getMethod() {
+                    return MethodDependency.findMethodInClass(requireNonNull(instance).getClass(), requireNonNull(name), toTypes(parameters));
                 }
 
                 @Nonnull
@@ -86,7 +135,10 @@ public interface Dependency {
             );
         }
 
-        static <T> Constructor<T> findConstructor(@Nonnull final Class<T> from, @Nonnull final Class<?>... parameters) {
+        static <T> Constructor<T> findConstructor(
+                @Nonnull final Class<T> from,
+                @Nonnull final Class<?>... parameters
+        ) {
             try {
                 return requireNonNull(from).getConstructor(requireNonNull(parameters));
             } catch (final NoSuchMethodException e) {
@@ -94,7 +146,10 @@ public interface Dependency {
             }
         }
 
-        static <T> ConstructorDependency<T> constructor(@Nonnull final Class<T> from, @Nonnull final ServiceReference<?>... parameters) {
+        static <T> ConstructorDependency<T> constructor(
+                @Nonnull final Class<T> from,
+                @Nonnull final ServiceReference<?>... parameters
+        ) {
             return new ConstructorDependency<T>() {
                 @Nonnull
                 @Override

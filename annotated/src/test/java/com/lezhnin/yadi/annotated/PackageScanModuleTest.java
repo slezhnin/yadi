@@ -1,10 +1,13 @@
 package com.lezhnin.yadi.annotated;
 
 import static com.lezhnin.yadi.annotated.PackageScanModule.fromPackage;
+import static com.lezhnin.yadi.api.ServiceReference.serviceReference;
 import static org.assertj.core.api.Assertions.assertThat;
 import com.lezhnin.yadi.api.ServiceLocator;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import com.lezhnin.yadi.api.ServiceReference;
 import org.junit.jupiter.api.Test;
 
 class PackageScanModuleTest {
@@ -13,7 +16,7 @@ class PackageScanModuleTest {
     void testFromPackage() {
         ServiceLocator module = fromPackage(getClass().getPackage());
 
-        final A actual = module.locate(A.class).get();
+        final A actual = module.locate(serviceReference(A.class)).get();
 
         assertThat(actual).isNotNull();
         assertThat(actual.getB()).isNotNull();

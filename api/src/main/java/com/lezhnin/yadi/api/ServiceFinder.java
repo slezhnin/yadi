@@ -6,5 +6,5 @@ import javax.annotation.Nullable;
 public interface ServiceFinder {
 
     @Nullable
-    <T> ServiceSupplier<T> find(@Nonnull Class<T> serviceType, @Nullable String serviceId);
+    <T> ServiceDefinition<T> find(@Nonnull ServiceReference<T> serviceReference);
 }

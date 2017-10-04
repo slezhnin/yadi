@@ -1,66 +1,75 @@
 package com.lezhnin.yadi.simple;
 
-import static com.lezhnin.yadi.simple.ConstructorDependency.constructor;
-import static com.lezhnin.yadi.simple.MethodDependency.method;
-import static com.lezhnin.yadi.simple.MethodDependency.methodOf;
-import static com.lezhnin.yadi.simple.SimpleModule.simpleModule;
-import static com.lezhnin.yadi.simple.SimpleServiceProvider.provider;
-import static org.assertj.core.api.Assertions.assertThat;
-import com.lezhnin.yadi.api.ServiceLocator;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import static com.lezhnin.yadi.api.Dependency.ConstructorDependency.constructor;
+import static com.lezhnin.yadi.api.Dependency.MethodDependency.methodFromClass;
+import static com.lezhnin.yadi.api.ServiceDefinition.service;
+import static com.lezhnin.yadi.api.ServiceReference.serviceReference;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SimpleModuleTest {
 
-    @Test
-    void test1() {
-        final ServiceLocator parent = new SimpleModule() {
-            @Override
-            protected void doBind() {
-                bind(B.class).to(provider(B.class));
-            }
-        };
-
-        class Module extends SimpleModule {
-
-            public Module() {
-                super(parent);
-            }
-
-            public A createA(final B b, final C c) {
-                return new A(b, c);
-            }
-
-            @Override
-            protected void doBind() {
-                // bind(A.class).to(provider(A.class, constructor(B.class, C.class)));
-                bind(A.class).to(provider(
-                        A.class, Module.this,
-                        methodOf(Module.this, "createA", B.class, C.class)
-                ));
-                bind(C.class).to(provider(C.class, method(C.class, "setB", null, B.class)));
-            }
-        };
-
-        final ServiceLocator module = new Module();
-
-        final A actual = module.locate(A.class).get();
-
-        assertThat(actual).isNotNull();
-        assertThat(actual.getB()).isNotNull();
-        assertThat(actual.getC()).isNotNull();
-    }
+//    @Test
+//    void test1() {
+//        final ServiceLocator parent = new SimpleModule() {
+//            @Override
+//            protected void doBind() {
+//                bind(B.class).to(provider(B.class));
+//            }
+//        };
+//
+//        class Module extends SimpleModule {
+//
+//            public Module() {
+//                super(parent);
+//            }
+//
+//            public A createA(final B b, final C c) {
+//                return new A(b, c);
+//            }
+//
+//            @Override
+//            protected void doBind() {
+//                // bind(A.class).to(provider(A.class, constructor(B.class, C.class)));
+//                bind(A.class).to(provider(
+//                        A.class, Module.this,
+//                        methodOf(Module.this, "createA", B.class, C.class)
+//                ));
+//                bind(C.class).to(provider(C.class, method(C.class, "setB", null, B.class)));
+//            }
+//        }
+//        ;
+//
+//        final ServiceLocator module = new Module();
+//
+//        final A actual = module.locate(A.class).get();
+//
+//        assertThat(actual).isNotNull();
+//        assertThat(actual.getB()).isNotNull();
+//        assertThat(actual.getC()).isNotNull();
+//    }
 
     @Test
     void test2() {
-        final SimpleModule parent = simpleModule();
-        parent.bind(B.class).to(provider(B.class));
+        final SimpleModule parent = new SimpleModule();
+        parent.register(service(serviceReference(B.class), constructor(B.class)));
 
-        final SimpleModule module = simpleModule(parent);
-        module.bind(A.class).to(provider(A.class, constructor(B.class, C.class)))
-              .bind(C.class).to(provider(C.class, method(C.class, "setB", null, B.class)));
+        final SimpleModule module = new SimpleModule(parent);
+        module.register(service(
+                serviceReference(A.class),
+                constructor(
+                        A.class,
+                        serviceReference(B.class),
+                        serviceReference(C.class)
+                )
+        )).register(service(
+                serviceReference(C.class),
+                constructor(C.class),
+                methodFromClass(C.class, "setB", serviceReference(B.class))
+        ));
 
-        final A actual = module.locate(A.class).get();
+        final A actual = module.locate(serviceReference(A.class)).get();
 
         assertThat(actual).isNotNull();
         assertThat(actual.getB()).isNotNull();
@@ -68,26 +77,26 @@ class SimpleModuleTest {
         assertThat(actual.getC().getB()).isNotNull();
     }
 
-    @Disabled
-    @Test
-    void test3() {
-        final ServiceLocator module = new SimpleModule() {
-            @Override
-            protected void doBind() {
-                bind(A.class).to(provider(A.class, constructor(B.class, C.class)));
-                bind(B.class).to(provider(B.class, method(B.class, "setA", null, A.class)));
-                bind(C.class).to(provider(C.class, method(C.class, "setB", null, B.class)));
-            }
-        };
-
-        final A actual = module.locate(A.class).get();
-
-        assertThat(actual).isNotNull();
-        assertThat(actual.getB()).isNotNull();
-        assertThat(actual.getB().getA()).isNotNull();
-        assertThat(actual.getC()).isNotNull();
-        assertThat(actual.getC().getB()).isNotNull();
-    }
+//    @Disabled
+//    @Test
+//    void test3() {
+//        final ServiceLocator module = new SimpleModule() {
+//            @Override
+//            protected void doBind() {
+//                bind(A.class).to(provider(A.class, constructor(B.class, C.class)));
+//                bind(B.class).to(provider(B.class, method(B.class, "setA", null, A.class)));
+//                bind(C.class).to(provider(C.class, method(C.class, "setB", null, B.class)));
+//            }
+//        };
+//
+//        final A actual = module.locate(A.class).get();
+//
+//        assertThat(actual).isNotNull();
+//        assertThat(actual.getB()).isNotNull();
+//        assertThat(actual.getB().getA()).isNotNull();
+//        assertThat(actual.getC()).isNotNull();
+//        assertThat(actual.getC().getB()).isNotNull();
+//    }
 
     public static class Amodule {
 

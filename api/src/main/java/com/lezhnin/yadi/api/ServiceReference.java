@@ -3,6 +3,8 @@ package com.lezhnin.yadi.api;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import java.util.Optional;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -14,7 +16,14 @@ public interface ServiceReference<T> {
     @Nonnull
     Class<T> getType();
 
-    static <T> ServiceReference<T> serviceReference(@Nonnull final Class<T> type, @Nullable final String id) {
+    @Nonnull
+    Optional<Supplier<T>> getSupplier();
+
+    static <T> ServiceReference<T> serviceReference(
+            @Nonnull final Class<T> type,
+            @Nullable final String id,
+            @Nullable final Supplier<T> supplier
+    ) {
         return new ServiceReference<T>() {
             @Nonnull
             @Override
@@ -27,11 +36,25 @@ public interface ServiceReference<T> {
             public Class<T> getType() {
                 return type;
             }
+
+            @Nonnull
+            @Override
+            public Optional<Supplier<T>> getSupplier() {
+                return ofNullable(supplier);
+            }
         };
     }
 
+    static <T> ServiceReference<T> serviceReference(@Nonnull final Class<T> type, @Nullable final String id) {
+        return serviceReference(type, id, null);
+    }
+
+    static <T> ServiceReference<T> serviceReference(@Nonnull final Class<T> type, @Nullable final Supplier<T> supplier) {
+        return serviceReference(type, null, supplier);
+    }
+
     static <T> ServiceReference<T> serviceReference(@Nonnull final Class<T> type) {
-        return serviceReference(type, null);
+        return serviceReference(type, null, null);
     }
 
     @Nonnull

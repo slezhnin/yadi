@@ -1,51 +1,48 @@
 package com.lezhnin.yadi.api;
 
-import static com.lezhnin.yadi.api.ServiceReference.fromTypes;
+import static com.lezhnin.yadi.api.ServiceReference.serviceReference;
 import static com.lezhnin.yadi.api.ServiceReference.toTypes;
 import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
-public interface Dependency {
+public interface Dependency<T> {
+
+    @Nonnull
+    ServiceReference<T> getReference();
 
     @Nonnull
     ServiceReference<?>[] getReferences();
 
-    interface ImmediateDependency<T> extends Dependency {
-
-        @Nonnull
-        Supplier<T> getSupplier();
-
-        static <T> ImmediateDependency<T> immediate(@Nonnull final Supplier<T> supplier) {
-            return new ImmediateDependency<T>() {
-                @Nonnull
-                @Override
-                public ServiceReference<?>[] getReferences() {
-                    return new ServiceReference<?>[0];
-                }
-
-                @Nonnull
-                @Override
-                public Supplier<T> getSupplier() {
-                    return requireNonNull(supplier);
-                }
-            };
-        }
-    }
-
-    interface MethodDependency extends Dependency {
+    interface MethodDependency<T> extends Dependency<T> {
 
         @Nonnull
         Method getMethod();
 
-        static MethodDependency methodFromClass(@Nonnull final Method method) {
-            return methodFromClass(
-                    requireNonNull(method).getDeclaringClass(),
-                    method.getName(),
-                    fromTypes(method.getParameterTypes())
-            );
+        static <T> MethodDependency methodFromClass(@Nonnull final ServiceReference<T> reference,
+                                                    @Nonnull final Method method,
+                                                    @Nonnull final ServiceReference<?>... parameters
+        ) {
+            return new MethodDependency() {
+                @Nonnull
+                @Override
+                public ServiceReference getReference() {
+                    return requireNonNull(reference);
+                }
+
+                @Nonnull
+                @Override
+                public Method getMethod() {
+                    return requireNonNull(method);
+                }
+
+                @Nonnull
+                @Override
+                public ServiceReference<?>[] getReferences() {
+                    return requireNonNull(parameters);
+                }
+            };
         }
 
         static Method findMethodInClass(
@@ -60,46 +57,31 @@ public interface Dependency {
             }
         }
 
-        static MethodDependency methodFromClass(
-                @Nonnull final Class<?> from,
+        static <T> MethodDependency methodFromClass(
+                @Nonnull final ServiceReference<T> from,
                 @Nonnull final String name,
                 @Nonnull final ServiceReference<?>... parameters
         ) {
-            return new MethodDependency() {
-                @Nonnull
-                @Override
-                public Method getMethod() {
-                    return MethodDependency.findMethodInClass(requireNonNull(from), requireNonNull(name), toTypes(parameters));
-                }
-
-                @Nonnull
-                @Override
-                public ServiceReference<?>[] getReferences() {
-                    return requireNonNull(parameters);
-                }
-            };
+            return methodFromClass(
+                    requireNonNull(from),
+                    MethodDependency.findMethodInClass(
+                            from.getType(),
+                            requireNonNull(name),
+                            toTypes(requireNonNull(parameters))
+                    ),
+                    parameters
+            );
         }
     }
 
-    interface InstanceMethodDependency<T> extends MethodDependency {
+    interface InstanceMethodDependency<T> extends MethodDependency<T> {
 
         @Nonnull
         T getInstance();
 
         static <T> InstanceMethodDependency<T> methodFromInstance(
                 @Nonnull final T instance,
-                @Nonnull final Method method
-        ) {
-            return methodFromInstance(
-                    requireNonNull(instance),
-                    method.getName(),
-                    fromTypes(method.getParameterTypes())
-            );
-        }
-
-        static <T> InstanceMethodDependency<T> methodFromInstance(
-                @Nonnull final T instance,
-                @Nonnull final String name,
+                @Nonnull final Method method,
                 @Nonnull final ServiceReference<?>... parameters
         ) {
             return new InstanceMethodDependency<T>() {
@@ -109,10 +91,17 @@ public interface Dependency {
                     return requireNonNull(instance);
                 }
 
+                @SuppressWarnings("unchecked")
+                @Nonnull
+                @Override
+                public ServiceReference<T> getReference() {
+                    return serviceReference((Class<T>) requireNonNull(instance).getClass());
+                }
+
                 @Nonnull
                 @Override
                 public Method getMethod() {
-                    return MethodDependency.findMethodInClass(requireNonNull(instance).getClass(), requireNonNull(name), toTypes(parameters));
+                    return requireNonNull(method);
                 }
 
                 @Nonnull
@@ -122,17 +111,51 @@ public interface Dependency {
                 }
             };
         }
+
+        static <T> InstanceMethodDependency<T> methodFromInstance(
+                @Nonnull final T instance,
+                @Nonnull final String name,
+                @Nonnull final ServiceReference<?>... parameters
+        ) {
+            return methodFromInstance(
+                    instance,
+                    MethodDependency.findMethodInClass(
+                            requireNonNull(instance).getClass(),
+                            requireNonNull(name),
+                            toTypes(parameters)),
+                    parameters
+            );
+        }
     }
 
-    interface ConstructorDependency<T> extends Dependency {
+    interface ConstructorDependency<T> extends Dependency<T> {
 
         Constructor<T> getConstructor();
 
-        static <T> ConstructorDependency<T> constructor(@Nonnull final Constructor<T> constructor) {
-            return constructor(
-                    requireNonNull(constructor).getDeclaringClass(),
-                    fromTypes(constructor.getParameterTypes())
-            );
+        static <T> ConstructorDependency<T> constructor(
+                @Nonnull final ServiceReference<T> from,
+                @Nonnull final Constructor<T> constructor,
+                @Nonnull final ServiceReference<?>... parameters
+        ) {
+            return new ConstructorDependency<T>() {
+                @Nonnull
+                @Override
+                public Constructor<T> getConstructor() {
+                    return requireNonNull(constructor);
+                }
+
+                @Nonnull
+                @Override
+                public ServiceReference<T> getReference() {
+                    return requireNonNull(from);
+                }
+
+                @Nonnull
+                @Override
+                public ServiceReference<?>[] getReferences() {
+                    return requireNonNull(parameters);
+                }
+            };
         }
 
         static <T> Constructor<T> findConstructor(
@@ -147,22 +170,17 @@ public interface Dependency {
         }
 
         static <T> ConstructorDependency<T> constructor(
-                @Nonnull final Class<T> from,
+                @Nonnull final ServiceReference<T> from,
                 @Nonnull final ServiceReference<?>... parameters
         ) {
-            return new ConstructorDependency<T>() {
-                @Nonnull
-                @Override
-                public Constructor<T> getConstructor() {
-                    return ConstructorDependency.findConstructor(requireNonNull(from), toTypes(parameters));
-                }
-
-                @Nonnull
-                @Override
-                public ServiceReference<?>[] getReferences() {
-                    return requireNonNull(parameters);
-                }
-            };
+            return constructor(
+                    from,
+                    ConstructorDependency.findConstructor(
+                            requireNonNull(from).getType(),
+                            toTypes(parameters)
+                    ),
+                    parameters
+            );
         }
     }
 }

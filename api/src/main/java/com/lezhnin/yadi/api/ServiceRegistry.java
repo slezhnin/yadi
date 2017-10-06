@@ -1,9 +1,7 @@
 package com.lezhnin.yadi.api;
 
-import javax.annotation.Nonnull;
+import java.util.function.Consumer;
 
-public interface ServiceRegistry {
+public interface ServiceRegistry extends Consumer<ServiceDefinition<?>> {
 
-    @Nonnull
-    ServiceRegistry register(@Nonnull ServiceDefinition<?> serviceDefinition);
 }

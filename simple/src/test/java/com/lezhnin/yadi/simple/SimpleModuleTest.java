@@ -4,7 +4,9 @@ import static com.lezhnin.yadi.api.Dependency.ConstructorDependency.constructor;
 import static com.lezhnin.yadi.api.Dependency.MethodDependency.methodFromClass;
 import static com.lezhnin.yadi.api.ServiceDefinition.serviceDefinition;
 import static com.lezhnin.yadi.api.ServiceReference.serviceReference;
+import static java.util.Arrays.stream;
 import static org.assertj.core.api.Assertions.assertThat;
+import com.lezhnin.yadi.api.ServiceDefinition;
 import org.junit.jupiter.api.Test;
 
 class SimpleModuleTest {
@@ -53,12 +55,12 @@ class SimpleModuleTest {
     void testModuleWithSelfRegistration() {
         final SimpleModule parent = new SimpleModule(
                 r -> {
-                    r.register(serviceDefinition(serviceReference(B.class), constructor(serviceReference(B.class))));
+                    r.accept(serviceDefinition(serviceReference(B.class), constructor(serviceReference(B.class))));
                 }
         );
         final SimpleModule module = new SimpleModule(
                 r -> {
-                    r.register(
+                    stream(new ServiceDefinition<?>[]{
                             serviceDefinition(
                                     serviceReference(A.class),
                                     methodFromClass(
@@ -67,14 +69,13 @@ class SimpleModuleTest {
                                             serviceReference(B.class),
                                             serviceReference(C.class)
                                     )
-                            )
-                    ).register(
+                            ),
                             serviceDefinition(
                                     serviceReference(C.class),
                                     constructor(serviceReference(C.class)),
                                     methodFromClass(serviceReference(C.class), "setB", serviceReference(B.class))
                             )
-                    );
+                    }).forEach(r);
                 },
                 parent
         );
@@ -90,10 +91,10 @@ class SimpleModuleTest {
     @Test
     void testModule() {
         final SimpleModule parent = new SimpleModule();
-        parent.register(serviceDefinition(serviceReference(B.class), constructor(serviceReference(B.class))));
+        parent.accept(serviceDefinition(serviceReference(B.class), constructor(serviceReference(B.class))));
 
         final SimpleModule module = new SimpleModule(parent);
-        module.register(
+        module.accept(
                 serviceDefinition(
                         serviceReference(A.class),
                         constructor(
@@ -102,7 +103,8 @@ class SimpleModuleTest {
                                 serviceReference(C.class)
                         )
                 )
-        ).register(
+        );
+        module.accept(
                 serviceDefinition(
                         serviceReference(C.class),
                         constructor(serviceReference(C.class)),

@@ -40,14 +40,12 @@ public class SimpleModule implements ServiceRegistry, ServiceFinder, ServiceLoca
         this.selfRegistration();
     }
 
-    protected void selfRegistration() {
+    @Override
+    public void accept(@Nonnull final ServiceDefinition<?> serviceDefinition) {
+        serviceDefinitionMap.put(requireNonNull(serviceDefinition).getReference().getId(), serviceDefinition);
     }
 
-    @Nonnull
-    @Override
-    public ServiceRegistry register(@Nonnull final ServiceDefinition<?> serviceDefinition) {
-        serviceDefinitionMap.put(requireNonNull(serviceDefinition).getReference().getId(), serviceDefinition);
-        return this;
+    protected void selfRegistration() {
     }
 
     @SuppressWarnings("unchecked")

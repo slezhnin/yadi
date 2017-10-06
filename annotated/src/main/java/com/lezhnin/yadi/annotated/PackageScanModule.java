@@ -52,7 +52,7 @@ public class PackageScanModule extends SimpleModule {
             final ServiceReference<?>[] parameters = stream(namedConstructor.getParameterTypes())
                     .map(NamedReference::namedReference)
                     .toArray(ServiceReference<?>[]::new);
-            register(serviceDefinition(
+            accept(serviceDefinition(
                     namedReference(namedClass),
                     constructor(reference, namedConstructor, parameters),
                     postConstructDependencyFinder.apply(namedClass)

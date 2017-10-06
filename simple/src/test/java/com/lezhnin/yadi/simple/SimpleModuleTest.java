@@ -54,12 +54,12 @@ class SimpleModuleTest {
     @Test
     void testModuleWithSelfRegistration() {
         final SimpleModule parent = new SimpleModule(
-                r -> {
-                    r.accept(serviceDefinition(serviceReference(B.class), constructor(serviceReference(B.class))));
+                register -> {
+                    register.accept(serviceDefinition(serviceReference(B.class), constructor(serviceReference(B.class))));
                 }
         );
         final SimpleModule module = new SimpleModule(
-                r -> {
+                register -> {
                     stream(new ServiceDefinition<?>[]{
                             serviceDefinition(
                                     serviceReference(A.class),
@@ -75,7 +75,7 @@ class SimpleModuleTest {
                                     constructor(serviceReference(C.class)),
                                     methodFromClass(serviceReference(C.class), "setB", serviceReference(B.class))
                             )
-                    }).forEach(r);
+                    }).forEach(register);
                 },
                 parent
         );

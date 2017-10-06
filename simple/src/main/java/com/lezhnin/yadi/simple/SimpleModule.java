@@ -41,7 +41,7 @@ public class SimpleModule implements ServiceRegistry, ServiceFinder, ServiceLoca
     }
 
     @Override
-    public void accept(@Nonnull final ServiceDefinition<?> serviceDefinition) {
+    public void accept(final ServiceDefinition<?> serviceDefinition) {
         serviceDefinitionMap.put(requireNonNull(serviceDefinition).getReference().getId(), serviceDefinition);
     }
 

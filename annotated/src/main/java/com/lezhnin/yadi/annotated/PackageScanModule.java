@@ -23,7 +23,7 @@ public class PackageScanModule extends SimpleModule {
     private final Function<Class<?>, Constructor<?>> constructorFinder;
     private final Function<Class<?>, Dependency[]> postConstructDependencyFinder;
 
-    public PackageScanModule(@Nonnull final String packagePrefix,
+    PackageScanModule(@Nonnull final String packagePrefix,
                              final Function<Class<?>, Constructor<?>> constructorFinder,
                              final Function<Class<?>, Dependency[]> postConstructDependencyFinder,
                              @Nonnull final ServiceFinder... parents) {
@@ -43,7 +43,7 @@ public class PackageScanModule extends SimpleModule {
     }
 
     @SuppressWarnings("unchecked")
-    protected void registerAnnotations() {
+    private void registerAnnotations() {
         final Reflections reflections = new Reflections(packagePrefix);
         final Set<Class<?>> namedClasses = reflections.getTypesAnnotatedWith(Named.class);
         for (final Class<?> namedClass : namedClasses) {

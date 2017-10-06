@@ -14,9 +14,9 @@ class PackageScanModuleTest {
 
     @Test
     void testFromPackage() {
-        ServiceLocator module = fromPackage(getClass().getPackage());
+        final ServiceLocator module = fromPackage(getClass().getPackage());
 
-        final A actual = module.locate(serviceReference(A.class)).get();
+        final A actual = module.locate(serviceReference(A.class, "blah!")).get();
 
         assertThat(actual).isNotNull();
         assertThat(actual.getB()).isNotNull();
@@ -24,7 +24,7 @@ class PackageScanModuleTest {
         assertThat(actual.getC().getB()).isNotNull();
     }
 
-    @Named
+    @Named("bah!")
     public static class B {
 
     }
@@ -44,11 +44,16 @@ class PackageScanModuleTest {
         }
     }
 
-    @Named
+    @Named("blah!")
     public static class A {
 
         private final B b;
         private final C c;
+
+        public A(final B b) {
+            this.b = b;
+            this.c = null;
+        }
 
         @Inject
         public A(final B b, final C c) {

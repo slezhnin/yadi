@@ -18,3 +18,7 @@ Dependency type:
 Construction method:
 1. Instance creation through constructor
 2. Instance creation through method invocation
+
+## Annotation
+
+[annotated README](annotated/README.md)

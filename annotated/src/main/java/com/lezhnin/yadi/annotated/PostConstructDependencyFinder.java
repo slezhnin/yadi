@@ -17,8 +17,8 @@ public final class PostConstructDependencyFinder implements Function<Class<?>, D
                 .map(method -> methodFromClass(
                         namedClassReference(someClass),
                         method,
-                        stream(method.getParameterTypes())
-                                .map(NamedClassReference::namedClassReference)
+                        stream(method.getParameters())
+                                .map(NamedParameterReference::namedParameterReference)
                                 .toArray(ServiceReference<?>[]::new)
                         )
                 ).toArray(Dependency[]::new);

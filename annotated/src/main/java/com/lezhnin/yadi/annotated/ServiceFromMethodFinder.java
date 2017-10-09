@@ -21,8 +21,8 @@ public final class ServiceFromMethodFinder implements Function<Class<?>, Service
                         methodFromClass(
                                 namedClassReference(someClass),
                                 method,
-                                stream(method.getParameterTypes())
-                                        .map(NamedClassReference::namedClassReference)
+                                stream(method.getParameters())
+                                        .map(NamedParameterReference::namedParameterReference)
                                         .toArray(ServiceReference<?>[]::new)
                         ))
                 ).toArray(ServiceDefinition<?>[]::new);

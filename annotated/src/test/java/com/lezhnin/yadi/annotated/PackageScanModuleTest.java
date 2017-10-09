@@ -24,10 +24,7 @@ class PackageScanModuleTest {
         final D dactual = module.locate(serviceReference(D.class)).get();
 
         assertThat(dactual).isNotNull();
-        assertThat(dactual.getA()).isNotNull();
-        assertThat(dactual.getA().getB()).isNotNull();
-        assertThat(dactual.getA().getC()).isNotNull();
-        assertThat(dactual.getA().getC().getB()).isNotNull();
+        assertThat(dactual.getE()).isNotNull();
     }
 
     @Named("bah!")
@@ -45,30 +42,40 @@ class PackageScanModuleTest {
         }
 
         @Inject
-        public void setB(final B b) {
+        public void setB(@Named("bah!") final B b) {
             this.b = b;
         }
     }
 
     public static class D {
 
-        private final A a;
+        private final E e;
 
-        public D(final A a) {
-            this.a = a;
+        public D(final E e) {
+            this.e = e;
         }
 
-        public A getA() {
-            return a;
+        public E getE() {
+            return e;
         }
+    }
+
+    @Named("E1")
+    public static class E {
+
     }
 
     @Named
     public static class ModuleD {
 
+        @Named("E2")
+        public E getE2() {
+            return new E();
+        }
+
         @Named
-        public D getD(final A a) {
-            return new D(a);
+        public D getD(@Named("E2") final E e) {
+            return new D(e);
         }
     }
 

@@ -42,6 +42,11 @@ public interface ServiceReference<T> {
             public Optional<Supplier<T>> getSupplier() {
                 return ofNullable(supplier);
             }
+
+            @Override
+            public String toString() {
+                return getClass().getSimpleName() + "{" + "id=\"" + id + "\", type=\"" + type + "\"}";
+            }
         };
     }
 

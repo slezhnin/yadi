@@ -1,6 +1,6 @@
 package com.lezhnin.yadi.annotated;
 
-import static com.lezhnin.yadi.annotated.NamedReference.namedReference;
+import static com.lezhnin.yadi.annotated.NamedClassReference.namedClassReference;
 import static com.lezhnin.yadi.api.Dependency.MethodDependency.methodFromClass;
 import static java.util.Arrays.stream;
 import com.lezhnin.yadi.api.Dependency;
@@ -13,12 +13,12 @@ public final class PostConstructDependencyFinder implements Function<Class<?>, D
     @Override
     public Dependency[] apply(final Class<?> someClass) {
         return stream(someClass.getMethods())
-                .filter(d -> d.getDeclaredAnnotation(Inject.class) != null)
+                .filter(method -> method.getDeclaredAnnotation(Inject.class) != null)
                 .map(method -> methodFromClass(
-                        namedReference(someClass),
+                        namedClassReference(someClass),
                         method,
                         stream(method.getParameterTypes())
-                                .map(NamedReference::namedReference)
+                                .map(NamedClassReference::namedClassReference)
                                 .toArray(ServiceReference<?>[]::new)
                         )
                 ).toArray(Dependency[]::new);

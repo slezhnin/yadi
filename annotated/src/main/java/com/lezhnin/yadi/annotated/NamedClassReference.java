@@ -6,7 +6,7 @@ import com.lezhnin.yadi.api.ServiceReference;
 import java.util.function.Function;
 import javax.inject.Named;
 
-public final class NamedReference<T> implements Function<Class<T>, ServiceReference<T>> {
+public final class NamedClassReference<T> implements Function<Class<T>, ServiceReference<T>> {
 
     @Override
     public ServiceReference<T> apply(final Class<T> someClass) {
@@ -16,7 +16,7 @@ public final class NamedReference<T> implements Function<Class<T>, ServiceRefere
                 .orElseGet(() -> serviceReference(someClass));
     }
 
-    public static  <T> ServiceReference<T> namedReference(final Class<T> namedClass) {
-        return new NamedReference<T>().apply(namedClass);
+    public static  <T> ServiceReference<T> namedClassReference(final Class<T> namedClass) {
+        return new NamedClassReference<T>().apply(namedClass);
     }
 }

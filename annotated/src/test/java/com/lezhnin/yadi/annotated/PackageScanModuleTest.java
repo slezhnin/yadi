@@ -6,8 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.lezhnin.yadi.api.ServiceLocator;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import com.lezhnin.yadi.api.ServiceReference;
 import org.junit.jupiter.api.Test;
 
 class PackageScanModuleTest {
@@ -22,6 +20,14 @@ class PackageScanModuleTest {
         assertThat(actual.getB()).isNotNull();
         assertThat(actual.getC()).isNotNull();
         assertThat(actual.getC().getB()).isNotNull();
+
+        final D dactual = module.locate(serviceReference(D.class)).get();
+
+        assertThat(dactual).isNotNull();
+        assertThat(dactual.getA()).isNotNull();
+        assertThat(dactual.getA().getB()).isNotNull();
+        assertThat(dactual.getA().getC()).isNotNull();
+        assertThat(dactual.getA().getC().getB()).isNotNull();
     }
 
     @Named("bah!")
@@ -41,6 +47,28 @@ class PackageScanModuleTest {
         @Inject
         public void setB(final B b) {
             this.b = b;
+        }
+    }
+
+    public static class D {
+
+        private final A a;
+
+        public D(final A a) {
+            this.a = a;
+        }
+
+        public A getA() {
+            return a;
+        }
+    }
+
+    @Named
+    public static class ModuleD {
+
+        @Named
+        public D getD(final A a) {
+            return new D(a);
         }
     }
 

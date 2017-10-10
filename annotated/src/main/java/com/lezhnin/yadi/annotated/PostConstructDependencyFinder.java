@@ -4,11 +4,10 @@ import static com.lezhnin.yadi.annotated.NamedClassReference.namedClassReference
 import static com.lezhnin.yadi.api.Dependency.MethodDependency.methodFromClass;
 import static java.util.Arrays.stream;
 import com.lezhnin.yadi.api.Dependency;
-import com.lezhnin.yadi.api.ServiceReference;
 import java.util.function.Function;
 import javax.inject.Inject;
 
-public final class PostConstructDependencyFinder implements Function<Class<?>, Dependency[]> {
+public final class PostConstructDependencyFinder implements Function<Class<?>, Dependency[]>, MethodParameters {
 
     @Override
     public Dependency[] apply(final Class<?> someClass) {
@@ -16,11 +15,9 @@ public final class PostConstructDependencyFinder implements Function<Class<?>, D
                 .filter(method -> method.getDeclaredAnnotation(Inject.class) != null)
                 .map(method -> methodFromClass(
                         namedClassReference(someClass),
+                        namedClassReference(someClass),
                         method,
-                        stream(method.getParameters())
-                                .map(NamedParameterReference::namedParameterReference)
-                                .toArray(ServiceReference<?>[]::new)
-                        )
+                        methodParameters(method))
                 ).toArray(Dependency[]::new);
     }
 }

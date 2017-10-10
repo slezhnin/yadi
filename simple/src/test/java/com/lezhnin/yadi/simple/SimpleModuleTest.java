@@ -22,9 +22,14 @@ class SimpleModuleTest {
                 register -> stream(
                         new ServiceDefinition<?>[]{
                                 serviceDefinition(
+                                        serviceReference(Amodule.class),
+                                        constructor(serviceReference(Amodule.class))
+                                ),
+                                serviceDefinition(
                                         serviceReference(A.class),
                                         methodFromClass(
                                                 serviceReference(Amodule.class),
+                                                serviceReference(A.class),
                                                 "createA",
                                                 serviceReference(B.class),
                                                 serviceReference(C.class)
@@ -33,7 +38,11 @@ class SimpleModuleTest {
                                 serviceDefinition(
                                         serviceReference(C.class),
                                         constructor(serviceReference(C.class)),
-                                        methodFromClass(serviceReference(C.class), "setB", serviceReference(B.class))
+                                        methodFromClass(
+                                                serviceReference(C.class),
+                                                "setB",
+                                                serviceReference(B.class)
+                                        )
                                 )
                         }
                 ).forEach(register),
@@ -67,7 +76,11 @@ class SimpleModuleTest {
                 serviceDefinition(
                         serviceReference(C.class),
                         constructor(serviceReference(C.class)),
-                        methodFromClass(serviceReference(C.class), "setB", serviceReference(B.class))
+                        methodFromClass(
+                                serviceReference(C.class),
+                                "setB",
+                                serviceReference(B.class)
+                        )
                 )
         );
 

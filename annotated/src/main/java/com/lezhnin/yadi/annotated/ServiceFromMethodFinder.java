@@ -6,11 +6,10 @@ import static com.lezhnin.yadi.api.Dependency.MethodDependency.methodFromClass;
 import static com.lezhnin.yadi.api.ServiceDefinition.serviceDefinition;
 import static java.util.Arrays.stream;
 import com.lezhnin.yadi.api.ServiceDefinition;
-import com.lezhnin.yadi.api.ServiceReference;
 import java.util.function.Function;
 import javax.inject.Named;
 
-public final class ServiceFromMethodFinder implements Function<Class<?>, ServiceDefinition<?>[]> {
+public final class ServiceFromMethodFinder implements Function<Class<?>, ServiceDefinition<?>[]>, MethodParameters {
 
     @Override
     public ServiceDefinition<?>[] apply(final Class<?> someClass) {
@@ -20,10 +19,9 @@ public final class ServiceFromMethodFinder implements Function<Class<?>, Service
                         namedMethodReference(method),
                         methodFromClass(
                                 namedClassReference(someClass),
+                                namedMethodReference(method),
                                 method,
-                                stream(method.getParameters())
-                                        .map(NamedParameterReference::namedParameterReference)
-                                        .toArray(ServiceReference<?>[]::new)
+                                methodParameters(method)
                         ))
                 ).toArray(ServiceDefinition<?>[]::new);
     }

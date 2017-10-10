@@ -9,13 +9,13 @@ public interface ServiceDefinition<T> {
     ServiceReference<T> getReference();
 
     @Nonnull
-    Dependency getConstructionDependency();
+    Dependency<T> getConstructionDependency();
 
     @Nonnull
     Dependency[] getPostConstructionDependencies();
 
     static <T> ServiceDefinition<T> serviceDefinition(@Nonnull final ServiceReference<T> serviceReference,
-                                                      @Nonnull final Dependency constructionDependency,
+                                                      @Nonnull final Dependency<T> constructionDependency,
                                                       @Nonnull final Dependency... postConstructionDependency) {
         return new ServiceDefinition<T>() {
             @Nonnull
@@ -26,7 +26,7 @@ public interface ServiceDefinition<T> {
 
             @Nonnull
             @Override
-            public Dependency getConstructionDependency() {
+            public Dependency<T> getConstructionDependency() {
                 return requireNonNull(constructionDependency);
             }
 

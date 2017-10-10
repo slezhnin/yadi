@@ -10,25 +10,36 @@ import javax.annotation.Nonnull;
 public interface Dependency<T> {
 
     @Nonnull
-    ServiceReference<T> getReference();
+    ServiceReference<T> getTargetReference();
 
     @Nonnull
     ServiceReference<?>[] getReferences();
 
-    interface MethodDependency<T> extends Dependency<T> {
+    interface MethodDependency<F, T> extends Dependency<T> {
+
+        @Nonnull
+        ServiceReference<F> getSourceReference();
 
         @Nonnull
         Method getMethod();
 
-        static <T> MethodDependency methodFromClass(@Nonnull final ServiceReference<T> reference,
-                                                    @Nonnull final Method method,
-                                                    @Nonnull final ServiceReference<?>... parameters
+        static <F, T> MethodDependency<F, T> methodFromClass(
+                @Nonnull final ServiceReference<F> sourceReference,
+                @Nonnull final ServiceReference<T> targetReference,
+                @Nonnull final Method method,
+                @Nonnull final ServiceReference<?>... parameters
         ) {
-            return new MethodDependency() {
+            return new MethodDependency<F, T>() {
                 @Nonnull
                 @Override
-                public ServiceReference getReference() {
-                    return requireNonNull(reference);
+                public ServiceReference<T> getTargetReference() {
+                    return requireNonNull(targetReference);
+                }
+
+                @Nonnull
+                @Override
+                public ServiceReference<F> getSourceReference() {
+                    return requireNonNull(sourceReference);
                 }
 
                 @Nonnull
@@ -57,15 +68,34 @@ public interface Dependency<T> {
             }
         }
 
-        static <T> MethodDependency methodFromClass(
-                @Nonnull final ServiceReference<T> from,
+        static <F, T> MethodDependency<F, T> methodFromClass(
+                @Nonnull final ServiceReference<F> sourceReference,
+                @Nonnull final ServiceReference<T> targetReference,
                 @Nonnull final String name,
                 @Nonnull final ServiceReference<?>... parameters
         ) {
             return methodFromClass(
-                    requireNonNull(from),
+                    requireNonNull(sourceReference),
+                    requireNonNull(targetReference),
                     MethodDependency.findMethodInClass(
-                            from.getType(),
+                            sourceReference.getType(),
+                            requireNonNull(name),
+                            toTypes(requireNonNull(parameters))
+                    ),
+                    parameters
+            );
+        }
+
+        static <T> MethodDependency<T, T> methodFromClass(
+                @Nonnull final ServiceReference<T> targetReference,
+                @Nonnull final String name,
+                @Nonnull final ServiceReference<?>... parameters
+        ) {
+            return methodFromClass(
+                    requireNonNull(targetReference),
+                    requireNonNull(targetReference),
+                    MethodDependency.findMethodInClass(
+                            targetReference.getType(),
                             requireNonNull(name),
                             toTypes(requireNonNull(parameters))
                     ),
@@ -74,28 +104,35 @@ public interface Dependency<T> {
         }
     }
 
-    interface InstanceMethodDependency<T> extends MethodDependency<T> {
+    interface InstanceMethodDependency<F, T> extends MethodDependency<F, T> {
 
         @Nonnull
-        T getInstance();
+        F getInstance();
 
-        static <T> InstanceMethodDependency<T> methodFromInstance(
-                @Nonnull final T instance,
+        static <F, T> InstanceMethodDependency<F, T> methodFromInstance(
+                @Nonnull final F instance,
+                @Nonnull final ServiceReference<T> targetReference,
                 @Nonnull final Method method,
                 @Nonnull final ServiceReference<?>... parameters
         ) {
-            return new InstanceMethodDependency<T>() {
+            return new InstanceMethodDependency<F, T>() {
                 @Nonnull
                 @Override
-                public T getInstance() {
+                public F getInstance() {
                     return requireNonNull(instance);
+                }
+
+                @Nonnull
+                @Override
+                public ServiceReference<T> getTargetReference() {
+                    return requireNonNull(targetReference);
                 }
 
                 @SuppressWarnings("unchecked")
                 @Nonnull
                 @Override
-                public ServiceReference<T> getReference() {
-                    return serviceReference((Class<T>) requireNonNull(instance).getClass());
+                public ServiceReference<F> getSourceReference() {
+                    return serviceReference((Class<F>) requireNonNull(instance).getClass());
                 }
 
                 @Nonnull
@@ -112,15 +149,34 @@ public interface Dependency<T> {
             };
         }
 
-        static <T> InstanceMethodDependency<T> methodFromInstance(
+        static <F, T> InstanceMethodDependency<F, T> methodFromInstance(
+                @Nonnull final F instance,
+                @Nonnull final ServiceReference<T> targetReference,
+                @Nonnull final String name,
+                @Nonnull final ServiceReference<?>... parameters
+        ) {
+            return methodFromInstance(
+                    instance,
+                    targetReference,
+                    MethodDependency.findMethodInClass(
+                            requireNonNull(instance).getClass(),
+                            requireNonNull(name),
+                            toTypes(parameters)),
+                    parameters
+            );
+        }
+
+        @SuppressWarnings("unchecked")
+        static <T> InstanceMethodDependency<T, T> methodFromInstance(
                 @Nonnull final T instance,
                 @Nonnull final String name,
                 @Nonnull final ServiceReference<?>... parameters
         ) {
             return methodFromInstance(
                     instance,
+                    serviceReference((Class<T>) requireNonNull(instance).getClass()),
                     MethodDependency.findMethodInClass(
-                            requireNonNull(instance).getClass(),
+                            instance.getClass(),
                             requireNonNull(name),
                             toTypes(parameters)),
                     parameters
@@ -146,7 +202,7 @@ public interface Dependency<T> {
 
                 @Nonnull
                 @Override
-                public ServiceReference<T> getReference() {
+                public ServiceReference<T> getTargetReference() {
                     return requireNonNull(from);
                 }
 

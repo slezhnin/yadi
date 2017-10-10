@@ -1,6 +1,7 @@
 package com.lezhnin.yadi.api;
 
 import static java.util.Objects.requireNonNull;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 public interface ServiceDefinition<T> {
@@ -14,20 +15,22 @@ public interface ServiceDefinition<T> {
     @Nonnull
     Dependency[] getPostConstructionDependencies();
 
-    static <T> ServiceDefinition<T> serviceDefinition(@Nonnull final ServiceReference<T> serviceReference,
-                                                      @Nonnull final Dependency<T> constructionDependency,
+    static <T> ServiceDefinition<T> serviceDefinition(final ServiceReference<? extends T> serviceReference,
+                                                      @Nonnull final Dependency<? extends T> constructionDependency,
                                                       @Nonnull final Dependency... postConstructionDependency) {
         return new ServiceDefinition<T>() {
+            @SuppressWarnings("unchecked")
             @Nonnull
             @Override
             public ServiceReference<T> getReference() {
-                return requireNonNull(serviceReference);
+                return (ServiceReference<T>) serviceReference;
             }
 
+            @SuppressWarnings("unchecked")
             @Nonnull
             @Override
             public Dependency<T> getConstructionDependency() {
-                return requireNonNull(constructionDependency);
+                return (Dependency<T>) constructionDependency;
             }
 
             @Nonnull

@@ -3,7 +3,7 @@ package com.lezhnin.junit.parameters.suppliers.random;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class RandomString implements Supplier<String> {
+public class RandomUUIDString implements Supplier<String> {
 
     @Override
     public String get() {

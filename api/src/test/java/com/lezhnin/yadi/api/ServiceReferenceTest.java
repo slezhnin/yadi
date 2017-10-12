@@ -3,7 +3,7 @@ package com.lezhnin.yadi.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import com.lezhnin.junit.parameters.AnnotatedArgumentSource;
 import com.lezhnin.junit.parameters.Parameters;
-import com.lezhnin.junit.parameters.suppliers.random.RandomString;
+import com.lezhnin.junit.parameters.suppliers.random.RandomUUIDString;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class ServiceReferenceTest {
 
     @ParameterizedTest
     @ArgumentsSource(AnnotatedArgumentSource.class)
-    @Parameters({RandomString.class, TestClassSupplier.class})
+    @Parameters({RandomUUIDString.class, TestClassSupplier.class})
     void serviceReference(final String id, final Supplier<TestClass> testClassSupplier) {
         final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class, id, testClassSupplier);
 
@@ -39,7 +39,7 @@ class ServiceReferenceTest {
 
     @ParameterizedTest
     @ArgumentsSource(AnnotatedArgumentSource.class)
-    @Parameters(RandomString.class)
+    @Parameters(RandomUUIDString.class)
     void serviceReference1(final String id) {
         final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class, id);
 

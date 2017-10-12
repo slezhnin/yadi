@@ -1,7 +1,9 @@
-package com.lezhnin.yadi.api;
+package com.lezhnin.yadi.api.dependency;
 
 import static com.lezhnin.yadi.api.ServiceReference.toTypes;
 import static java.util.Objects.requireNonNull;
+import com.lezhnin.yadi.api.MethodNotFoundException;
+import com.lezhnin.yadi.api.ServiceReference;
 import java.lang.reflect.Method;
 import javax.annotation.Nonnull;
 

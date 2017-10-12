@@ -1,6 +1,7 @@
 package com.lezhnin.yadi.api;
 
 import static java.util.Objects.requireNonNull;
+import com.lezhnin.yadi.api.dependency.Dependency;
 import javax.annotation.Nonnull;
 
 public interface ServiceDefinition<T> {

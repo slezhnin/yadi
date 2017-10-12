@@ -1,11 +1,11 @@
 package com.lezhnin.yadi.annotated;
 
 import static com.lezhnin.yadi.annotated.NamedClassReference.namedClassReference;
-import static com.lezhnin.yadi.api.ConstructorDependency.constructor;
+import static com.lezhnin.yadi.api.dependency.ConstructorDependency.constructor;
 import static com.lezhnin.yadi.api.ServiceDefinition.serviceDefinition;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
-import com.lezhnin.yadi.api.Dependency;
+import com.lezhnin.yadi.api.dependency.Dependency;
 import com.lezhnin.yadi.api.ServiceDefinition;
 import com.lezhnin.yadi.api.ServiceFinder;
 import com.lezhnin.yadi.api.ServiceLocator;

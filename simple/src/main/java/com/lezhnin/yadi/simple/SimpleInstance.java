@@ -2,9 +2,9 @@ package com.lezhnin.yadi.simple;
 
 import static com.lezhnin.yadi.api.ServiceReference.toTypes;
 import static java.util.Arrays.stream;
-import com.lezhnin.yadi.api.ConstructorDependency;
-import com.lezhnin.yadi.api.InstanceMethodDependency;
-import com.lezhnin.yadi.api.MethodDependency;
+import com.lezhnin.yadi.api.dependency.ConstructorDependency;
+import com.lezhnin.yadi.api.dependency.InstanceMethodDependency;
+import com.lezhnin.yadi.api.dependency.MethodDependency;
 import com.lezhnin.yadi.api.ServiceConstructionException;
 import com.lezhnin.yadi.api.ServiceDefinition;
 import com.lezhnin.yadi.api.ServiceLocator;

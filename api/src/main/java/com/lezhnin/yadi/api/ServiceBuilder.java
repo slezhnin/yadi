@@ -1,11 +1,12 @@
 package com.lezhnin.yadi.api;
 
-import static com.lezhnin.yadi.api.ConstructorDependency.constructor;
-import static com.lezhnin.yadi.api.MethodDependency.methodFromClass;
+import static com.lezhnin.yadi.api.dependency.ConstructorDependency.constructor;
+import static com.lezhnin.yadi.api.dependency.MethodDependency.methodFromClass;
 import static com.lezhnin.yadi.api.ServiceDefinition.serviceDefinition;
 import static com.lezhnin.yadi.api.ServiceReference.fromTypes;
 import static com.lezhnin.yadi.api.ServiceReference.serviceReference;
 import static java.util.Arrays.asList;
+import com.lezhnin.yadi.api.dependency.Dependency;
 import java.util.ArrayList;
 import java.util.List;
 

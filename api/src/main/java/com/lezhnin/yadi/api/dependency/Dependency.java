@@ -1,4 +1,4 @@
-package com.lezhnin.yadi.api;
+package com.lezhnin.yadi.api.dependency;
 
 import com.lezhnin.yadi.api.ServiceReference;
 import javax.annotation.Nonnull;

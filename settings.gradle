@@ -5,4 +5,5 @@ include 'simple'
 findProject(':simple')?.name = 'yadi-simple'
 include 'annotated'
 findProject(':annotated')?.name = 'yadi-annotated'
+include 'junit-parameters'
 

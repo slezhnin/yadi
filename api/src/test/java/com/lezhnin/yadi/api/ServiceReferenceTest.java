@@ -1,9 +1,14 @@
 package com.lezhnin.yadi.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import com.lezhnin.junit.parameters.AnnotatedArgumentSource;
+import com.lezhnin.junit.parameters.Parameters;
+import com.lezhnin.junit.parameters.suppliers.random.RandomString;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 class ServiceReferenceTest {
 
@@ -11,11 +16,18 @@ class ServiceReferenceTest {
 
     }
 
-    @Test
-    void serviceReference() {
-        final String id = "TestClassId";
-        final Supplier<TestClass> testClassSupplier = TestClass::new;
+    public static class TestClassSupplier implements Supplier<Supplier<TestClass>> {
 
+        @Override
+        public Supplier<TestClass> get() {
+            return TestClass::new;
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(AnnotatedArgumentSource.class)
+    @Parameters({RandomString.class, TestClassSupplier.class})
+    void serviceReference(final String id, final Supplier<TestClass> testClassSupplier) {
         final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class, id, testClassSupplier);
 
         assertThat(actual)
@@ -25,10 +37,10 @@ class ServiceReferenceTest {
                 .hasFieldOrPropertyWithValue("supplier", Optional.of(testClassSupplier));
     }
 
-    @Test
-    void serviceReference1() {
-        final String id = "TestClassId";
-
+    @ParameterizedTest
+    @ArgumentsSource(AnnotatedArgumentSource.class)
+    @Parameters(RandomString.class)
+    void serviceReference1(final String id) {
         final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class, id);
 
         assertThat(actual)
@@ -38,10 +50,10 @@ class ServiceReferenceTest {
                 .hasFieldOrPropertyWithValue("supplier", Optional.empty());
     }
 
-    @Test
-    void serviceReference2() {
-        final Supplier<TestClass> testClassSupplier = TestClass::new;
-
+    @ParameterizedTest
+    @ArgumentsSource(AnnotatedArgumentSource.class)
+    @Parameters(TestClassSupplier.class)
+    void serviceReference2(final Supplier<TestClass> testClassSupplier) {
         final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class, testClassSupplier);
 
         assertThat(actual)

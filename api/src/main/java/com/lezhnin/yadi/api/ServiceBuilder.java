@@ -1,7 +1,7 @@
 package com.lezhnin.yadi.api;
 
-import static com.lezhnin.yadi.api.Dependency.ConstructorDependency.constructor;
-import static com.lezhnin.yadi.api.Dependency.MethodDependency.methodFromClass;
+import static com.lezhnin.yadi.api.ConstructorDependency.constructor;
+import static com.lezhnin.yadi.api.MethodDependency.methodFromClass;
 import static com.lezhnin.yadi.api.ServiceDefinition.serviceDefinition;
 import static com.lezhnin.yadi.api.ServiceReference.fromTypes;
 import static com.lezhnin.yadi.api.ServiceReference.serviceReference;

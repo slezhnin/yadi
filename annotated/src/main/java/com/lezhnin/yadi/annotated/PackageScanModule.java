@@ -1,7 +1,7 @@
 package com.lezhnin.yadi.annotated;
 
 import static com.lezhnin.yadi.annotated.NamedClassReference.namedClassReference;
-import static com.lezhnin.yadi.api.Dependency.ConstructorDependency.constructor;
+import static com.lezhnin.yadi.api.ConstructorDependency.constructor;
 import static com.lezhnin.yadi.api.ServiceDefinition.serviceDefinition;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;

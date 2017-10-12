@@ -1,7 +1,7 @@
 package com.lezhnin.yadi.annotated;
 
 import static com.lezhnin.yadi.annotated.NamedClassReference.namedClassReference;
-import static com.lezhnin.yadi.api.Dependency.MethodDependency.methodFromClass;
+import static com.lezhnin.yadi.api.MethodDependency.methodFromClass;
 import static java.util.Arrays.stream;
 import com.lezhnin.yadi.api.Dependency;
 import java.util.function.Function;

@@ -1,4 +1,7 @@
-package com.lezhnin.yadi.api;
+package com.lezhnin.yadi.api.exception;
+
+import com.lezhnin.yadi.api.ServiceLocator;
+import com.lezhnin.yadi.api.ServiceReference;
 
 public class ServiceNotFoundException extends RuntimeException {
 

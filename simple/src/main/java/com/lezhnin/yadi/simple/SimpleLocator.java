@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 import com.lezhnin.yadi.api.ServiceDefinition;
 import com.lezhnin.yadi.api.ServiceFinder;
 import com.lezhnin.yadi.api.ServiceLocator;
-import com.lezhnin.yadi.api.ServiceNotFoundException;
+import com.lezhnin.yadi.api.exception.ServiceNotFoundException;
 import com.lezhnin.yadi.api.ServiceReference;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;

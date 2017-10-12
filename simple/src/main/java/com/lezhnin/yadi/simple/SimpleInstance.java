@@ -5,7 +5,7 @@ import static java.util.Arrays.stream;
 import com.lezhnin.yadi.api.dependency.ConstructorDependency;
 import com.lezhnin.yadi.api.dependency.InstanceMethodDependency;
 import com.lezhnin.yadi.api.dependency.MethodDependency;
-import com.lezhnin.yadi.api.ServiceConstructionException;
+import com.lezhnin.yadi.api.exception.ServiceConstructionException;
 import com.lezhnin.yadi.api.ServiceDefinition;
 import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.api.ServiceReference;

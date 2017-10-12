@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import com.lezhnin.yadi.api.dependency.Dependency;
 import com.lezhnin.yadi.api.dependency.InstanceMethodDependency;
 import com.lezhnin.yadi.api.dependency.MethodDependency;
-import com.lezhnin.yadi.api.MethodNotFoundException;
+import com.lezhnin.yadi.api.exception.MethodNotFoundException;
 import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.api.ServiceReference;
 import java.util.function.Function;

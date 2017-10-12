@@ -1,4 +1,4 @@
-package com.lezhnin.yadi.api;
+package com.lezhnin.yadi.api.exception;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;

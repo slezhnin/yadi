@@ -27,7 +27,7 @@ class ServiceReferenceTest {
     @ParameterizedTest
     @ArgumentsSource(AnnotatedArgumentSource.class)
     @Parameters({RandomUUIDString.class, TestClassSupplier.class})
-    void serviceReference(final String id, final Supplier<TestClass> testClassSupplier) {
+    void serviceReferenceFromIdAndSupplier(final String id, final Supplier<TestClass> testClassSupplier) {
         final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class, id, testClassSupplier);
 
         assertThat(actual)
@@ -40,7 +40,7 @@ class ServiceReferenceTest {
     @ParameterizedTest
     @ArgumentsSource(AnnotatedArgumentSource.class)
     @Parameters(RandomUUIDString.class)
-    void serviceReference1(final String id) {
+    void serviceReferenceFromId(final String id) {
         final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class, id);
 
         assertThat(actual)
@@ -53,7 +53,7 @@ class ServiceReferenceTest {
     @ParameterizedTest
     @ArgumentsSource(AnnotatedArgumentSource.class)
     @Parameters(TestClassSupplier.class)
-    void serviceReference2(final Supplier<TestClass> testClassSupplier) {
+    void serviceReferenceFromSupplier(final Supplier<TestClass> testClassSupplier) {
         final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class, testClassSupplier);
 
         assertThat(actual)
@@ -64,7 +64,7 @@ class ServiceReferenceTest {
     }
 
     @Test
-    void serviceReference3() {
+    void serviceReferenceFromClass() {
         final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class);
 
         assertThat(actual)

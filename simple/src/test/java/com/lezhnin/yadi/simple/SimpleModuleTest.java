@@ -10,6 +10,7 @@ import static com.lezhnin.yadi.simple.SimpleModule.moduleWithRegistration;
 import static java.util.Arrays.stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import com.lezhnin.yadi.api.ServiceDefinition;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -97,16 +98,19 @@ class SimpleModuleTest {
     @Test
     void testBuilder() {
         final SimpleModule module = module();
-        module.accept(service().forClass(B.class).forConstructor().build());
-        module.accept(service().forClass(B.class).withName("Blah!").forConstructor().build());
-        module.accept(service()
-                .forClass(C.class).forConstructor()
-                .postConstruct().method().withName("setB").withParameters(B.class).build());
-        module.accept(service().forClass(A.class).forConstructor().withParameters(B.class, C.class).build());
-        module.accept(service()
-                .forClass(A.class).withName("AmoduleA")
-                .forMethod().withName("createA").withParameters(B.class, C.class).inClass(Amodule.class)
-                .build());
+        Stream.<ServiceDefinition<?>>builder()
+                .add(service().forClass(B.class).forConstructor().build())
+                .add(service().forClass(B.class).withName("Blah!").forConstructor().build())
+                .add(service()
+                        .forClass(C.class).forConstructor()
+                        .postConstruct().method().withName("setB").withParameters(B.class).build())
+                .add(service().forClass(A.class).forConstructor().withParameters(B.class, C.class).build())
+                .add(service()
+                        .forClass(A.class).withName("AmoduleA")
+                        .forMethod().withName("createA").withParameters(B.class, C.class).inClass(Amodule.class)
+                        .build())
+                .build()
+                .forEach(module);
 
         final A actual = module.locate(A.class).get();
 

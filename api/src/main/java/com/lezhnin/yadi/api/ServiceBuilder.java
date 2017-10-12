@@ -5,9 +5,9 @@ import static com.lezhnin.yadi.api.Dependency.MethodDependency.methodFromClass;
 import static com.lezhnin.yadi.api.ServiceDefinition.serviceDefinition;
 import static com.lezhnin.yadi.api.ServiceReference.fromTypes;
 import static com.lezhnin.yadi.api.ServiceReference.serviceReference;
-import static java.util.Arrays.asList;
-import java.util.ArrayList;
-import java.util.List;
+import static java.util.Arrays.stream;
+import static java.util.stream.Stream.concat;
+import static java.util.stream.Stream.of;
 
 public interface ServiceBuilder<T> {
 
@@ -173,16 +173,17 @@ public interface ServiceBuilder<T> {
                                 return serviceDefinition;
                             }
 
-                            private ServiceDefinition<T> addMethod(final ServiceDefinition<T> serviceDefinition, final Dependency
-                                    method) {
-                                final List<Dependency> dependencies = new ArrayList<>(
-                                        asList(serviceDefinition.getPostConstructionDependencies())
-                                );
-                                dependencies.add(method);
+                            private ServiceDefinition<T> addMethod(
+                                    final ServiceDefinition<T> serviceDefinition,
+                                    final Dependency method
+                            ) {
                                 return serviceDefinition(
                                         serviceDefinition.getReference(),
                                         serviceDefinition.getConstructionDependency(),
-                                        dependencies.toArray(new Dependency[dependencies.size()])
+                                        concat(
+                                                stream(serviceDefinition.getPostConstructionDependencies()),
+                                                of(method)
+                                        ).toArray(Dependency[]::new)
                                 );
                             }
                         };

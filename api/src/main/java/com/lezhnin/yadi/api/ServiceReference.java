@@ -3,6 +3,7 @@ package com.lezhnin.yadi.api;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -28,7 +29,7 @@ public interface ServiceReference<T> {
             @Nonnull
             @Override
             public String getId() {
-                return ofNullable(id).orElse(type.getName());
+                return ofNullable(id).orElse(type.getCanonicalName());
             }
 
             @Nonnull
@@ -45,7 +46,24 @@ public interface ServiceReference<T> {
 
             @Override
             public String toString() {
-                return getClass().getSimpleName() + "{" + "id=\"" + id + "\", type=\"" + type + "\"}";
+                return "ServiceReference{" + "id=\"" + getId() + "\", type=\"" + getType() + "\"}";
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(getId(), getType(), getSupplier());
+            }
+
+            @Override
+            public boolean equals(final Object obj) {
+                if (obj instanceof ServiceReference) {
+                    final ServiceReference reference = (ServiceReference) obj;
+                    return Objects.equals(getType(), reference.getType()) &&
+                            Objects.equals(getId(), reference.getId()) &&
+                            Objects.equals(getSupplier(), reference.getSupplier());
+                } else {
+                    return false;
+                }
             }
         };
     }
@@ -64,11 +82,7 @@ public interface ServiceReference<T> {
 
     @Nonnull
     static ServiceReference<?>[] fromTypes(@Nonnull final Class<?>... types) {
-        final ServiceReference<?>[] references = new ServiceReference<?>[requireNonNull(types).length];
-        for (int i = 0; i < types.length; i++) {
-            references[i] = serviceReference(types[i]);
-        }
-        return references;
+        return stream(requireNonNull(types)).map(ServiceReference::serviceReference).toArray(ServiceReference<?>[]::new);
     }
 
     @Nonnull

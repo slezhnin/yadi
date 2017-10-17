@@ -13,4 +13,6 @@ public @interface Parameters {
     Class<? extends Supplier<?>>[] value();
 
     int count() default 5;
+
+    int maxSize() default 5;
 }

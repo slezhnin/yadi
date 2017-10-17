@@ -1,4 +1,4 @@
-package com.lezhnin.junit.parameters.suppliers.random;
+package com.lezhnin.junit.parameters.supplier.random;
 
 import java.util.Random;
 import java.util.function.Supplier;

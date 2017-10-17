@@ -1,4 +1,4 @@
-package com.lezhnin.junit.parameters.suppliers.random;
+package com.lezhnin.junit.parameters.supplier.random;
 
 import static java.util.UUID.randomUUID;
 import java.util.function.Supplier;

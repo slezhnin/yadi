@@ -3,7 +3,7 @@ package com.lezhnin.yadi.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import com.lezhnin.junit.parameters.AnnotatedArgumentSource;
 import com.lezhnin.junit.parameters.Parameters;
-import com.lezhnin.junit.parameters.suppliers.random.RandomUUIDString;
+import com.lezhnin.junit.parameters.supplier.random.RandomUUIDString;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;

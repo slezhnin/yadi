@@ -1,6 +1,7 @@
 package com.lezhnin.junit.parameters;
 
 import static java.util.stream.Stream.generate;
+import com.lezhnin.junit.parameters.factory.ArgumentsFactory;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtensionContext;

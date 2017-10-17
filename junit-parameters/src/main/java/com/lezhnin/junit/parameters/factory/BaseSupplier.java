@@ -1,9 +1,9 @@
-package com.lezhnin.junit.parameters;
+package com.lezhnin.junit.parameters.factory;
 
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class BaseSupplier implements Supplier<Object> {
+abstract class BaseSupplier implements Supplier<Object> {
 
     private static final Random random = new Random();
 
@@ -31,10 +31,5 @@ public class BaseSupplier implements Supplier<Object> {
 
     int getMaxSize() {
         return maxSize;
-    }
-
-    @Override
-    public Object get() {
-        return supplier.get();
     }
 }

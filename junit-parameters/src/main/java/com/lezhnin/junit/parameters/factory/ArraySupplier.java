@@ -1,4 +1,4 @@
-package com.lezhnin.junit.parameters;
+package com.lezhnin.junit.parameters.factory;
 
 import static java.util.stream.Stream.generate;
 import java.lang.reflect.Array;

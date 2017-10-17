@@ -1,26 +1,18 @@
-package com.lezhnin.junit.parameters;
+package com.lezhnin.junit.parameters.factory;
 
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class ArgumentFactory implements Supplier<Object> {
+public class ArgumentSupplier implements Supplier<Object> {
 
     private final Supplier<?> supplier;
     private final Class<?> parameterType;
     private final int maxSize;
 
-    ArgumentFactory(final Class<? extends Supplier<?>> supplierType, final Class<?> parameterType, final int maxSize) {
-        this.supplier = instance(supplierType);
+    ArgumentSupplier(final Supplier<?> supplier, final Class<?> parameterType, final int maxSize) {
+        this.supplier = supplier;
         this.parameterType = parameterType;
         this.maxSize = maxSize;
-    }
-
-    private <T> T instance(final Class<T> type) {
-        try {
-            return type.newInstance();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

@@ -2,7 +2,8 @@ group 'com.lezhnin'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    compile project(':yadi-simple')
+    compile project(':yadi-api')
+    testCompile project(':yadi-simple')
     compile 'org.reflections:reflections:0.9.11'
     compile 'javax.inject:javax.inject:1'
 }

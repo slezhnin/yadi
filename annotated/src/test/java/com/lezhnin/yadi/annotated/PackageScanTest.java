@@ -1,18 +1,19 @@
 package com.lezhnin.yadi.annotated;
 
-import static com.lezhnin.yadi.annotated.PackageScanModule.fromPackage;
+import static com.lezhnin.yadi.annotated.PackageScan.scanPackage;
 import static com.lezhnin.yadi.api.ServiceReference.serviceReference;
 import static org.assertj.core.api.Assertions.assertThat;
-import com.lezhnin.yadi.api.ServiceLocator;
+import com.lezhnin.yadi.simple.SimpleModule;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.junit.jupiter.api.Test;
 
-class PackageScanModuleTest {
+class PackageScanTest {
 
     @Test
     void testFromPackage() {
-        final ServiceLocator module = fromPackage(getClass().getPackage());
+        final SimpleModule module = SimpleModule.module();
+        scanPackage(module, getClass().getPackage());
 
         final A actual = module.locate(serviceReference(A.class, "blah!")).get();
 

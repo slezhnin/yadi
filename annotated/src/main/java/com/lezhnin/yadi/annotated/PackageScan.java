@@ -5,15 +5,20 @@ import static com.lezhnin.yadi.api.ServiceDefinition.serviceDefinition;
 import static com.lezhnin.yadi.api.dependency.ConstructorDependency.constructor;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
+
 import com.lezhnin.yadi.api.ServiceDefinition;
+import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.api.ServiceReference;
 import com.lezhnin.yadi.api.ServiceRegistry;
 import com.lezhnin.yadi.api.dependency.Dependency;
+
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Named;
+
 import org.reflections.Reflections;
 
 public class PackageScan {
@@ -37,31 +42,26 @@ public class PackageScan {
         registerAnnotations();
     }
 
-    public static PackageScan scanPackage(@Nonnull final ServiceRegistry registry, @Nonnull final String prefix) {
-        return new PackageScan(
-                registry,
-                prefix,
+    @Nullable
+    public static ServiceLocator scanPackage(@Nonnull final ServiceRegistry registry, @Nonnull final String prefix) {
+        new PackageScan(registry, prefix,
                 new ConstructorFinder(),
                 new PostConstructDependencyFinder(),
                 new ServiceFromMethodFinder()
         );
+        return registry instanceof ServiceLocator ? (ServiceLocator) registry : null;
     }
 
-    public static PackageScan scanPackage(@Nonnull final ServiceRegistry registry, @Nonnull final Package pkg) {
-        return new PackageScan(
-                registry,
-                pkg.getName(),
-                new ConstructorFinder(),
-                new PostConstructDependencyFinder(),
-                new ServiceFromMethodFinder()
-        );
+    @Nullable
+    public static ServiceLocator scanPackage(@Nonnull final ServiceRegistry registry, @Nonnull final Package pkg) {
+        return scanPackage(registry, pkg.getName());
     }
 
     private void registerAnnotations() {
         new Reflections(packagePrefix).getTypesAnnotatedWith(Named.class).stream()
-                                      .map(this::toServiceDefinition)
-                                      .peek(d -> serviceFromMethodFinder.apply(d.getReference().getType()).forEach(registry))
-                                      .forEach(registry);
+                .map(this::toServiceDefinition)
+                .peek(d -> serviceFromMethodFinder.apply(d.getReference().getType()).forEach(registry))
+                .forEach(registry);
     }
 
     @SuppressWarnings("unchecked")

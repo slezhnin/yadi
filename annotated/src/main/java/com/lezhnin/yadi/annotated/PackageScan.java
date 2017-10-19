@@ -5,20 +5,19 @@ import static com.lezhnin.yadi.api.ServiceDefinition.serviceDefinition;
 import static com.lezhnin.yadi.api.dependency.ConstructorDependency.constructor;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
-
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import com.lezhnin.yadi.api.ServiceDefinition;
 import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.api.ServiceReference;
 import com.lezhnin.yadi.api.ServiceRegistry;
 import com.lezhnin.yadi.api.dependency.Dependency;
-
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.inject.Named;
-
 import org.reflections.Reflections;
 
 public class PackageScan {
@@ -42,26 +41,24 @@ public class PackageScan {
         registerAnnotations();
     }
 
-    @Nullable
-    public static ServiceLocator scanPackage(@Nonnull final ServiceRegistry registry, @Nonnull final String prefix) {
+    public static Optional<ServiceLocator> scanPackage(@Nonnull final ServiceRegistry registry, @Nonnull final String prefix) {
         new PackageScan(registry, prefix,
                 new ConstructorFinder(),
                 new PostConstructDependencyFinder(),
                 new ServiceFromMethodFinder()
         );
-        return registry instanceof ServiceLocator ? (ServiceLocator) registry : null;
+        return registry instanceof ServiceLocator ? of((ServiceLocator) registry) : empty();
     }
 
-    @Nullable
-    public static ServiceLocator scanPackage(@Nonnull final ServiceRegistry registry, @Nonnull final Package pkg) {
+    public static Optional<ServiceLocator> scanPackage(@Nonnull final ServiceRegistry registry, @Nonnull final Package pkg) {
         return scanPackage(registry, pkg.getName());
     }
 
     private void registerAnnotations() {
         new Reflections(packagePrefix).getTypesAnnotatedWith(Named.class).stream()
-                .map(this::toServiceDefinition)
-                .peek(d -> serviceFromMethodFinder.apply(d.getReference().getType()).forEach(registry))
-                .forEach(registry);
+                                      .map(this::toServiceDefinition)
+                                      .peek(d -> serviceFromMethodFinder.apply(d.getReference().getType()).forEach(registry))
+                                      .forEach(registry);
     }
 
     @SuppressWarnings("unchecked")

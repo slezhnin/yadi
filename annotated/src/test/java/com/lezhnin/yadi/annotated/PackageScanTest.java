@@ -3,33 +3,34 @@ package com.lezhnin.yadi.annotated;
 import static com.lezhnin.yadi.annotated.PackageScan.scanPackage;
 import static com.lezhnin.yadi.api.ServiceReference.serviceReference;
 import static org.assertj.core.api.Assertions.assertThat;
-
 import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.simple.SimpleModule;
-
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import org.junit.jupiter.api.Test;
 
 class PackageScanTest {
 
     @Test
     void testFromPackage() {
-        final ServiceLocator module = scanPackage(SimpleModule.module(), getClass().getPackage());
-        assertThat(module).isNotNull();
+        final Optional<ServiceLocator> locatorOptional = scanPackage(SimpleModule.module(), getClass().getPackage());
 
-        final A actual = module.locate(serviceReference(A.class, "blah!")).get();
+        final Optional<A> oActual = locatorOptional.map(locator ->
+                locator.locate(serviceReference(A.class, "blah!")).get()
+        );
 
-        assertThat(actual).isNotNull();
-        assertThat(actual.getB()).isNotNull();
-        assertThat(actual.getC()).isNotNull();
-        assertThat(actual.getC().getB()).isNotNull();
+        assertThat(oActual).isPresent();
+        oActual.ifPresent(actual -> assertThat(actual.getB()).isNotNull());
+        oActual.ifPresent(actual -> assertThat(actual.getC()).isNotNull());
+        oActual.ifPresent(actual -> assertThat(actual.getC().getB()).isNotNull());
 
-        final D dactual = module.locate(serviceReference(D.class)).get();
+        final Optional<D> oDactual = locatorOptional.map(locator ->
+                locator.locate(serviceReference(D.class)).get()
+        );
 
-        assertThat(dactual).isNotNull();
-        assertThat(dactual.getE()).isNotNull();
+        assertThat(oDactual).isPresent();
+        oDactual.ifPresent(actual -> assertThat(actual.getE()).isNotNull());
     }
 
     @Named("bah!")

@@ -1,16 +1,17 @@
 package com.lezhnin.junit.parameters.factory;
 
+import com.lezhnin.junit.parameters.provider.ValueProvider;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class ArgumentSupplier implements Supplier<Object> {
+public class ArgumentSupplier<T> implements Supplier<Object> {
 
-    private final Supplier<?> supplier;
+    private final ValueProvider<T> provider;
     private final Class<?> parameterType;
     private final int maxSize;
 
-    ArgumentSupplier(final Supplier<?> supplier, final Class<?> parameterType, final int maxSize) {
-        this.supplier = supplier;
+    ArgumentSupplier(final ValueProvider<T> provider, final Class<?> parameterType, final int maxSize) {
+        this.provider = provider;
         this.parameterType = parameterType;
         this.maxSize = maxSize;
     }
@@ -20,15 +21,15 @@ public class ArgumentSupplier implements Supplier<Object> {
         return getSupplier().get();
     }
 
-    private Supplier<?> getSupplier() {
+    private Supplier<Object> getSupplier() {
         if (parameterType.getName().startsWith("[L") && parameterType.getName().endsWith(";")) {
-            return new ArraySupplier(supplier, parameterType, maxSize);
-        } else if (parameterType.isAssignableFrom(Set.class)) {
-            return new SetSupplier(supplier, parameterType, maxSize);
-        } else if (parameterType.isAssignableFrom(Iterable.class)) {
-            return new ListSupplier(supplier, parameterType, maxSize);
+            return new ArraySupplier<>(provider, maxSize);
+        } else if (Set.class.isAssignableFrom(parameterType)) {
+            return new SetSupplier<>(provider, maxSize);
+        } else if (Iterable.class.isAssignableFrom(parameterType)) {
+            return new ListSupplier<>(provider, maxSize);
         } else {
-            return supplier;
+            return () -> provider.apply(parameterType);
         }
     }
 }

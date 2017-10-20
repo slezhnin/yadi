@@ -1,28 +1,27 @@
 package com.lezhnin.junit.parameters.factory;
 
-import static java.util.stream.Stream.generate;
+import com.lezhnin.junit.parameters.provider.ValueProvider;
 import java.lang.reflect.Array;
-import java.util.function.Supplier;
 
-public class ArraySupplier extends BaseSupplier {
+public class ArraySupplier<T> extends BaseSupplier<T, Object> {
 
-    ArraySupplier(final Supplier<?> supplier, final Class<?> parameterType, final int maxSize) {
-        super(supplier, parameterType, maxSize);
+    ArraySupplier(final ValueProvider<T> provider, final int maxSize) {
+        super(provider, provider.getProvidedClass(), maxSize);
+        //        super(provider, arrayElementType(parameterType), maxSize);
     }
 
     @Override
     public Object get() {
-        final String typeName = getParameterType().getName();
-        final Class<?> elementType = load(typeName.substring(2, typeName.length() - 1));
-        return generate(getSupplier()).limit(getRandom().nextInt(getMaxSize()))
-                                      .toArray(length -> (Object[]) Array.newInstance(elementType, length));
+        return generateFromProvider().toArray(length -> (Object[]) Array.newInstance(getParameterType(), length));
     }
 
-    private Class<?> load(final String className) {
-        try {
-            return getParameterType().getClassLoader().loadClass(className);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    //    private static Class<?> arrayElementType(final Class<?> parameterType) {
+    //        try {
+    //            final String typeName = parameterType.getName();
+    //            final String className = typeName.substring(2, typeName.length() - 1);
+    //            return parameterType.getClassLoader().loadClass(className);
+    //        } catch (final Exception e) {
+    //            throw new RuntimeException(e);
+    //        }
+    //    }
 }

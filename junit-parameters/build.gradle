@@ -11,4 +11,5 @@ repositories {
 
 dependencies {
     compile 'org.junit.jupiter:junit-jupiter-params:5.0.1'
+    compile "org.mockito:mockito-core:2.+"
 }

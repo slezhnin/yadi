@@ -1,19 +1,16 @@
 package com.lezhnin.junit.parameters.factory;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Stream.generate;
-import java.util.function.Supplier;
+import com.lezhnin.junit.parameters.provider.ValueProvider;
 
-public class ListSupplier extends BaseSupplier {
+public class ListSupplier<T> extends BaseSupplier<T, Object> {
 
-    ListSupplier(final Supplier<?> supplier, final Class<?> parameterType, final int maxSize) {
-        super(supplier, parameterType, maxSize);
+    ListSupplier(final ValueProvider<T> provider, final int maxSize) {
+        super(provider, provider.getProvidedClass(), maxSize);
     }
 
     @Override
     public Object get() {
-        return generate(getSupplier())
-                .limit(getRandom().nextInt(getMaxSize()))
-                .collect(toList());
+        return generateFromProvider().collect(toList());
     }
 }

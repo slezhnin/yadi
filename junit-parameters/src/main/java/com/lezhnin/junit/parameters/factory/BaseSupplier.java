@@ -1,35 +1,42 @@
 package com.lezhnin.junit.parameters.factory;
 
+import com.lezhnin.junit.parameters.provider.ValueProvider;
 import java.util.Random;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
-abstract class BaseSupplier implements Supplier<Object> {
+abstract class BaseSupplier<T, R> implements Supplier<R> {
 
     private static final Random random = new Random();
 
-    private final Supplier<?> supplier;
+    private final ValueProvider<T> provider;
     private final Class<?> parameterType;
     private final int maxSize;
 
-    BaseSupplier(final Supplier<?> supplier, final Class<?> parameterType, final int maxSize) {
-        this.supplier = supplier;
+    BaseSupplier(final ValueProvider<T> provider, final Class<?> parameterType, final int maxSize) {
+        this.provider = provider;
         this.parameterType = parameterType;
         this.maxSize = maxSize;
     }
 
-    static Random getRandom() {
-        return random;
+    public ValueProvider<T> getProvider() {
+        return provider;
     }
 
-    public Supplier<?> getSupplier() {
-        return supplier;
-    }
-
-    Class<?> getParameterType() {
+    public Class<?> getParameterType() {
         return parameterType;
     }
 
-    int getMaxSize() {
+    public int getMaxSize() {
         return maxSize;
+    }
+
+    protected Stream<T> generateFromProvider() {
+        return Stream.generate(() -> provider.apply(parameterType))
+                     .limit(random.nextInt(maxSize));
+    }
+
+    static Random getRandom() {
+        return random;
     }
 }

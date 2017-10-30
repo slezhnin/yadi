@@ -15,7 +15,6 @@ public final class PostConstructDependencyFinder implements Function<Class<?>, D
                 .filter(method -> method.getDeclaredAnnotation(Inject.class) != null)
                 .map(method -> methodFromClass(
                         namedClassReference(someClass),
-                        namedClassReference(someClass),
                         method,
                         methodParameters(method))
                 ).toArray(Dependency[]::new);

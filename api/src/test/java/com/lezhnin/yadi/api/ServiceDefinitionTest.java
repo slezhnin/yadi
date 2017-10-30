@@ -17,7 +17,7 @@ class ServiceDefinitionTest {
     @ParameterizedTest
     @ArgumentsSource(AnnotatedArgumentSource.class)
     @Parameters(value = {DependencyProvider.class, DependencyProvider.class}, count = 10)
-    void serviceDefinition(final Dependency<TestClass> constructorDependency, final Dependency[] dependencies) {
+    void serviceDefinition(final Dependency constructorDependency, final Dependency[] dependencies) {
         final ServiceDefinition<TestClass> actual = ServiceDefinition.serviceDefinition(testReference, constructorDependency, dependencies);
 
         assertThat(actual)

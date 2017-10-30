@@ -70,7 +70,7 @@ public class PackageScan {
                 .toArray(ServiceReference<?>[]::new);
         return serviceDefinition(
                 reference,
-                constructor(reference, namedConstructor, parameters),
+                constructor(namedConstructor, parameters),
                 postConstructDependencyFinder.apply(namedClass)
         );
     }

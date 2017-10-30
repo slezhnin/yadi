@@ -1,10 +1,10 @@
 package com.lezhnin.yadi.simple;
 
-import static com.lezhnin.yadi.api.dependency.ConstructorDependency.constructor;
-import static com.lezhnin.yadi.api.dependency.MethodDependency.methodFromClass;
 import static com.lezhnin.yadi.api.ServiceBuilder.service;
 import static com.lezhnin.yadi.api.ServiceDefinition.serviceDefinition;
 import static com.lezhnin.yadi.api.ServiceReference.serviceReference;
+import static com.lezhnin.yadi.api.dependency.ConstructorDependency.constructor;
+import static com.lezhnin.yadi.api.dependency.MethodDependency.methodFromClass;
 import static com.lezhnin.yadi.simple.SimpleModule.module;
 import static com.lezhnin.yadi.simple.SimpleModule.moduleWithRegistration;
 import static java.util.Arrays.stream;
@@ -31,7 +31,6 @@ class SimpleModuleTest {
                                         serviceReference(A.class),
                                         methodFromClass(
                                                 serviceReference(Amodule.class),
-                                                serviceReference(A.class),
                                                 "createA",
                                                 serviceReference(B.class),
                                                 serviceReference(C.class)

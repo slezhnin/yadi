@@ -37,7 +37,7 @@ public class SimplePostConstruct<T> implements Function<Dependency[], T> {
     private void invokeMethod(final Object instance, final MethodDependency methodDependency) {
         try {
             methodDependency.getMethod().invoke(
-                    instance, referencesToObjects(methodDependency.getReferences())
+                    instance, referencesToObjects(methodDependency.getParameters())
             );
         } catch (final Exception exception) {
             throw new MethodNotFoundException(

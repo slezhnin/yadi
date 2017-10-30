@@ -2,42 +2,30 @@ package com.lezhnin.yadi.api.dependency;
 
 import static com.lezhnin.yadi.api.ServiceReference.toTypes;
 import static java.util.Objects.requireNonNull;
-import com.lezhnin.yadi.api.exception.MethodNotFoundException;
 import com.lezhnin.yadi.api.ServiceReference;
+import com.lezhnin.yadi.api.exception.MethodNotFoundException;
 import java.lang.reflect.Constructor;
 import javax.annotation.Nonnull;
+import lombok.Data;
+import lombok.NonNull;
 
-public interface ConstructorDependency<T> extends Dependency<T> {
+@Data
+public class ConstructorDependency<T> implements Dependency {
 
-    Constructor<T> getConstructor();
+    @NonNull
+    private final Constructor<T> constructor;
 
-    static <T> ConstructorDependency<T> constructor(
-            @Nonnull final ServiceReference<T> from,
+    @NonNull
+    private final ServiceReference<?>[] parameters;
+
+    public static <T> ConstructorDependency<T> constructor(
             @Nonnull final Constructor<T> constructor,
             @Nonnull final ServiceReference<?>... parameters
     ) {
-        return new ConstructorDependency<T>() {
-            @Nonnull
-            @Override
-            public Constructor<T> getConstructor() {
-                return requireNonNull(constructor);
-            }
-
-            @Nonnull
-            @Override
-            public ServiceReference<T> getTargetReference() {
-                return requireNonNull(from);
-            }
-
-            @Nonnull
-            @Override
-            public ServiceReference<?>[] getReferences() {
-                return requireNonNull(parameters);
-            }
-        };
+        return new ConstructorDependency<>(constructor, parameters);
     }
 
-    static <T> Constructor<T> findConstructor(
+    private static <T> Constructor<T> findConstructor(
             @Nonnull final Class<T> from,
             @Nonnull final Class<?>... parameters
     ) {
@@ -48,12 +36,11 @@ public interface ConstructorDependency<T> extends Dependency<T> {
         }
     }
 
-    static <T> ConstructorDependency<T> constructor(
+    public static <T> ConstructorDependency<T> constructor(
             @Nonnull final ServiceReference<T> from,
             @Nonnull final ServiceReference<?>... parameters
     ) {
         return constructor(
-                from,
                 ConstructorDependency.findConstructor(
                         requireNonNull(from).getType(),
                         toTypes(parameters)

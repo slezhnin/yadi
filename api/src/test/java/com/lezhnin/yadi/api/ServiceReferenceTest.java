@@ -6,7 +6,6 @@ import com.lezhnin.junit.parameters.Parameters;
 import com.lezhnin.junit.parameters.provider.Mock;
 import com.lezhnin.junit.parameters.provider.ProviderFromSupplier;
 import com.lezhnin.junit.parameters.provider.random.RandomUUIDString;
-import java.util.Optional;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,13 +17,13 @@ class ServiceReferenceTest {
     @ArgumentsSource(AnnotatedArgumentSource.class)
     @Parameters({RandomUUIDString.class, TestClassProvider.class})
     void serviceReferenceFromIdAndSupplier(final String id, final Supplier<TestClass> testClassSupplier) {
-        final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class, id, testClassSupplier);
+        final ServiceReference<TestClass> actual = new ServiceReference<>(TestClass.class, id, testClassSupplier);
 
         assertThat(actual)
                 .hasNoNullFieldsOrProperties()
                 .hasFieldOrPropertyWithValue("type", TestClass.class)
                 .hasFieldOrPropertyWithValue("id", id)
-                .hasFieldOrPropertyWithValue("supplier", Optional.of(testClassSupplier));
+                .hasFieldOrPropertyWithValue("supplier", testClassSupplier);
     }
 
     @ParameterizedTest
@@ -34,10 +33,9 @@ class ServiceReferenceTest {
         final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class, id);
 
         assertThat(actual)
-                .hasNoNullFieldsOrProperties()
                 .hasFieldOrPropertyWithValue("type", TestClass.class)
                 .hasFieldOrPropertyWithValue("id", id)
-                .hasFieldOrPropertyWithValue("supplier", Optional.empty());
+                .hasFieldOrPropertyWithValue("supplier", null);
     }
 
     @ParameterizedTest
@@ -50,7 +48,7 @@ class ServiceReferenceTest {
                 .hasNoNullFieldsOrProperties()
                 .hasFieldOrPropertyWithValue("type", TestClass.class)
                 .hasFieldOrPropertyWithValue("id", TestClass.class.getCanonicalName())
-                .hasFieldOrPropertyWithValue("supplier", Optional.of(testClassSupplier));
+                .hasFieldOrPropertyWithValue("supplier", testClassSupplier);
     }
 
     @Test
@@ -58,10 +56,9 @@ class ServiceReferenceTest {
         final ServiceReference<TestClass> actual = ServiceReference.serviceReference(TestClass.class);
 
         assertThat(actual)
-                .hasNoNullFieldsOrProperties()
                 .hasFieldOrPropertyWithValue("type", TestClass.class)
                 .hasFieldOrPropertyWithValue("id", TestClass.class.getCanonicalName())
-                .hasFieldOrPropertyWithValue("supplier", Optional.empty());
+                .hasFieldOrPropertyWithValue("supplier", null);
     }
 
     @Test

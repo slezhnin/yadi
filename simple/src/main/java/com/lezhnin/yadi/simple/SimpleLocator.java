@@ -27,7 +27,7 @@ public class SimpleLocator implements ServiceLocator {
         return () -> postConstruct(
                 new SimpleInstance<T>(this).apply(serviceDefinition)
         ).apply(
-                serviceDefinition.getPostConstructionDependencies()
+                serviceDefinition.getPostConstruct()
         );
     }
 

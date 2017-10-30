@@ -2,80 +2,42 @@ package com.lezhnin.yadi.api.dependency;
 
 import static com.lezhnin.yadi.api.ServiceReference.toTypes;
 import static java.util.Objects.requireNonNull;
-import com.lezhnin.yadi.api.exception.MethodNotFoundException;
 import com.lezhnin.yadi.api.ServiceReference;
+import com.lezhnin.yadi.api.exception.MethodNotFoundException;
 import java.lang.reflect.Method;
 import javax.annotation.Nonnull;
+import lombok.Data;
+import lombok.NonNull;
 
-public interface MethodDependency<F, T> extends Dependency<T> {
+@Data
+public class MethodDependency<T> implements Dependency {
 
-    @Nonnull
-    ServiceReference<F> getSourceReference();
+    @NonNull
+    private final ServiceReference<T> reference;
 
-    @Nonnull
-    Method getMethod();
+    @NonNull
+    private final Method method;
 
-    static <F, T> MethodDependency<F, T> methodFromClass(
-            @Nonnull final ServiceReference<F> sourceReference,
-            @Nonnull final ServiceReference<T> targetReference,
+    @NonNull
+    private final ServiceReference<?>[] parameters;
+
+    public static <T> MethodDependency<T> methodFromClass(
+            @Nonnull final ServiceReference<T> reference,
             @Nonnull final Method method,
             @Nonnull final ServiceReference<?>... parameters
     ) {
-        return new MethodDependency<F, T>() {
-            @Nonnull
-            @Override
-            public ServiceReference<T> getTargetReference() {
-                return requireNonNull(targetReference);
-            }
-
-            @Nonnull
-            @Override
-            public ServiceReference<F> getSourceReference() {
-                return requireNonNull(sourceReference);
-            }
-
-            @Nonnull
-            @Override
-            public Method getMethod() {
-                return requireNonNull(method);
-            }
-
-            @Nonnull
-            @Override
-            public ServiceReference<?>[] getReferences() {
-                return requireNonNull(parameters);
-            }
-        };
+        return new MethodDependency<>(reference, method, parameters);
     }
 
-    static <F, T> MethodDependency<F, T> methodFromClass(
-            @Nonnull final ServiceReference<F> sourceReference,
-            @Nonnull final ServiceReference<T> targetReference,
+    public static <T> MethodDependency<T> methodFromClass(
+            @Nonnull final ServiceReference<T> reference,
             @Nonnull final String name,
             @Nonnull final ServiceReference<?>... parameters
     ) {
         return methodFromClass(
-                requireNonNull(sourceReference),
-                requireNonNull(targetReference),
+                reference,
                 MethodDependency.findMethodInClass(
-                        sourceReference.getType(),
-                        requireNonNull(name),
-                        toTypes(requireNonNull(parameters))
-                ),
-                parameters
-        );
-    }
-
-    static <T> MethodDependency<T, T> methodFromClass(
-            @Nonnull final ServiceReference<T> targetReference,
-            @Nonnull final String name,
-            @Nonnull final ServiceReference<?>... parameters
-    ) {
-        return methodFromClass(
-                requireNonNull(targetReference),
-                requireNonNull(targetReference),
-                MethodDependency.findMethodInClass(
-                        targetReference.getType(),
+                        requireNonNull(reference).getType(),
                         requireNonNull(name),
                         toTypes(requireNonNull(parameters))
                 ),
@@ -89,7 +51,7 @@ public interface MethodDependency<F, T> extends Dependency<T> {
             @Nonnull final Class<?>... parameters
     ) {
         try {
-            return requireNonNull(from).getMethod(requireNonNull(name), requireNonNull(parameters));
+            return requireNonNull(from).getMethod(name, parameters);
         } catch (final NoSuchMethodException e) {
             throw new MethodNotFoundException(from, name, parameters, e);
         }

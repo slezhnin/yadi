@@ -21,7 +21,6 @@ public final class ServiceFromMethodFinder implements Function<Class<?>, List<Se
                         namedMethodReference(method),
                         methodFromClass(
                                 namedClassReference(someClass),
-                                namedMethodReference(method),
                                 method,
                                 methodParameters(method)
                         ))

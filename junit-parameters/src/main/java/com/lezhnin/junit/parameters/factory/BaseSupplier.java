@@ -28,10 +28,6 @@ abstract class BaseSupplier<T, R> implements Supplier<R> {
         return parameterType;
     }
 
-    public int getMaxSize() {
-        return maxSize;
-    }
-
     protected Stream<T> generateFromProvider() {
         return Stream.generate(() -> provider.apply(parameterType))
                      .limit(random.nextInt(maxSize));

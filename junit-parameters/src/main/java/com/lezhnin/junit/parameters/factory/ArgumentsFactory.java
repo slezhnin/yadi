@@ -1,5 +1,6 @@
 package com.lezhnin.junit.parameters.factory;
 
+import static java.util.Objects.requireNonNull;
 import com.lezhnin.junit.parameters.Parameters;
 import com.lezhnin.junit.parameters.provider.ValueProvider;
 import java.util.function.Supplier;
@@ -12,11 +13,13 @@ public class ArgumentsFactory implements Supplier<Arguments> {
     private final Class<?>[] parameterTypes;
 
     public ArgumentsFactory(final Parameters parameters, final Class<?>[] parameterTypes) {
+        this.parameters = requireNonNull(parameters);
+        this.parameterTypes = requireNonNull(parameterTypes);
+        requireNonNull(parameters.value(), "@Parameters(value) should be initialized!");
+
         if (parameters.value().length != parameterTypes.length) {
-            throw new RuntimeException("Invalid @Parameters.value() length is specified");
+            throw new RuntimeException("Invalid @Parameters(value) length!");
         }
-        this.parameters = parameters;
-        this.parameterTypes = parameterTypes;
     }
 
     @Override
@@ -35,7 +38,11 @@ public class ArgumentsFactory implements Supplier<Arguments> {
             final int maxSize
     ) {
         try {
-            return new ArgumentSupplier<>((ValueProvider<T>) providerClass.newInstance(), parameterType, maxSize);
+            return new ArgumentSupplier<>(
+                    (ValueProvider<T>) requireNonNull(providerClass).newInstance(),
+                    requireNonNull(parameterType),
+                    maxSize
+            );
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

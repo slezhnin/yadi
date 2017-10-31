@@ -1,5 +1,6 @@
 package com.lezhnin.junit.parameters.factory;
 
+import static java.util.Objects.requireNonNull;
 import com.lezhnin.junit.parameters.provider.ValueProvider;
 import java.util.Random;
 import java.util.function.Supplier;
@@ -14,8 +15,8 @@ abstract class BaseSupplier<T, R> implements Supplier<R> {
     private final int maxSize;
 
     BaseSupplier(final ValueProvider<T> provider, final Class<?> parameterType, final int maxSize) {
-        this.provider = provider;
-        this.parameterType = parameterType;
+        this.provider = requireNonNull(provider);
+        this.parameterType = requireNonNull(parameterType);
         this.maxSize = maxSize;
     }
 

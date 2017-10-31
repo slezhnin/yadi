@@ -1,5 +1,6 @@
 package com.lezhnin.junit.parameters.factory;
 
+import static java.util.Objects.requireNonNull;
 import com.lezhnin.junit.parameters.provider.ValueProvider;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -11,8 +12,8 @@ public class ArgumentSupplier<T> implements Supplier<Object> {
     private final int maxSize;
 
     ArgumentSupplier(final ValueProvider<T> provider, final Class<?> parameterType, final int maxSize) {
-        this.provider = provider;
-        this.parameterType = parameterType;
+        this.provider = requireNonNull(provider);
+        this.parameterType = requireNonNull(parameterType);
         this.maxSize = maxSize;
     }
 

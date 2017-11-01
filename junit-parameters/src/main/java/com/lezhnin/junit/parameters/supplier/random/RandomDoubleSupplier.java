@@ -4,6 +4,10 @@ public class RandomDoubleSupplier extends RandomSupplier<Double> {
 
     @Override
     public Double get() {
-        return getRandom().nextDouble();
+        if (getRandom().nextBoolean()) {
+            return getRandom().nextDouble();
+        } else {
+            return -getRandom().nextDouble();
+        }
     }
 }

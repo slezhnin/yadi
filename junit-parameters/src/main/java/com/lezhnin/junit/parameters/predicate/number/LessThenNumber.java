@@ -14,4 +14,9 @@ public class LessThenNumber implements Predicate<Number> {
     public boolean test(final Number number) {
         return number.doubleValue() < limit;
     }
+
+    @Override
+    public String toString() {
+        return "LessThenNumber(" + limit + ")";
+    }
 }

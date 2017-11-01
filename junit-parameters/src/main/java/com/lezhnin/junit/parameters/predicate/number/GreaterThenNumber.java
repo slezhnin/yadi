@@ -14,4 +14,9 @@ public class GreaterThenNumber implements Predicate<Number> {
     public boolean test(final Number number) {
         return number.doubleValue() > limit;
     }
+
+    @Override
+    public String toString() {
+        return "GreaterThenNumber(" + limit + ")";
+    }
 }

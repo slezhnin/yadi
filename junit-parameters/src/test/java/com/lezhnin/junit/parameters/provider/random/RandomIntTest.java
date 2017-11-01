@@ -67,8 +67,8 @@ class RandomIntTest {
     @ParameterizedTest
     @ArgumentsSource(AnnotatedArgumentSource.class)
     @Parameters(RandomInt.class)
-    void testRandomIntRange(@Limit({"positive", "<= 100000"}) final Integer randomInteger) {
+    void testRandomIntRange(@Limit({"positive", "<= 1000"}) final Integer randomInteger) {
         assertThat(randomInteger).isNotNull();
-        assertThat(randomInteger).isGreaterThanOrEqualTo(0).isLessThanOrEqualTo(100000);
+        assertThat(randomInteger).isGreaterThanOrEqualTo(0).isLessThanOrEqualTo(1000);
     }
 }

@@ -20,7 +20,7 @@ public class ProviderFromSupplier<T> implements ValueProvider<T> {
 
     private T limitedValue() {
         return generate(supplier)
-                .limit(1000000)
+                .limit(10000000)
                 .filter(value -> predicate == null || predicate.test(value))
                 .findFirst()
                 .orElseThrow(() -> new LimitsUnreachableException(suppliedClass, predicate));

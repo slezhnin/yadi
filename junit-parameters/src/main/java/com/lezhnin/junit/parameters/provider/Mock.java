@@ -13,4 +13,9 @@ public class Mock implements ValueProvider<Object> {
     public Class<?> getProvidedClass() {
         return Object.class;
     }
+
+    @Override
+    public void setLimits(final String[] limits) {
+        // EMPTY
+    }
 }

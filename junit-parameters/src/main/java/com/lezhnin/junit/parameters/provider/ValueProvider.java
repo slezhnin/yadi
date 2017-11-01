@@ -13,4 +13,6 @@ public interface ValueProvider<T> extends Function<Class<?>, T> {
         }
         return value;
     }
+
+    void setLimits(final String[] limits);
 }

@@ -32,7 +32,7 @@ class ServiceDefinitionTest {
     public static class DependencyProvider extends ProviderFromSupplier<Dependency> {
 
         public DependencyProvider() {
-            super(() -> constructor(testReference), Dependency.class);
+            super(() -> constructor(testReference), limiter, Dependency.class);
         }
     }
 }

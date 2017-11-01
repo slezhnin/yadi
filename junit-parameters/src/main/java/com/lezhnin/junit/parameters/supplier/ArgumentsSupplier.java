@@ -1,23 +1,25 @@
-package com.lezhnin.junit.parameters.factory;
+package com.lezhnin.junit.parameters.supplier;
 
 import static java.util.Objects.requireNonNull;
 import com.lezhnin.junit.parameters.Parameters;
 import com.lezhnin.junit.parameters.provider.ValueProvider;
+import com.lezhnin.junit.parameters.supplier.ArgumentSupplier;
+import java.lang.reflect.Parameter;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import org.junit.jupiter.params.provider.Arguments;
 
-public class ArgumentsFactory implements Supplier<Arguments> {
+public class ArgumentsSupplier implements Supplier<Arguments> {
 
-    private final Parameters parameters;
-    private final Class<?>[] parameterTypes;
+    private final Parameters annotatedParameters;
+    private final Parameter[] parameters;
 
-    public ArgumentsFactory(final Parameters parameters, final Class<?>[] parameterTypes) {
+    public ArgumentsSupplier(final Parameters annotatedParameters, final Parameter[] parameters) {
+        this.annotatedParameters = requireNonNull(annotatedParameters);
         this.parameters = requireNonNull(parameters);
-        this.parameterTypes = requireNonNull(parameterTypes);
-        requireNonNull(parameters.value(), "@Parameters(value) should be initialized!");
+        requireNonNull(annotatedParameters.value(), "@Parameters(value) should be initialized!");
 
-        if (parameters.value().length != parameterTypes.length) {
+        if (annotatedParameters.value().length != parameters.length) {
             throw new RuntimeException("Invalid @Parameters(value) length!");
         }
     }
@@ -25,8 +27,8 @@ public class ArgumentsFactory implements Supplier<Arguments> {
     @Override
     public Arguments get() {
         return Arguments.of(
-                IntStream.range(0, parameters.value().length).mapToObj(i ->
-                        supplier(parameters.value()[i], parameterTypes[i], parameters.maxSize()).get()
+                IntStream.range(0, annotatedParameters.value().length).mapToObj(i ->
+                        supplier(annotatedParameters.value()[i], parameters[i], annotatedParameters.maxSize()).get()
                 ).toArray()
         );
     }
@@ -34,13 +36,13 @@ public class ArgumentsFactory implements Supplier<Arguments> {
     @SuppressWarnings("unchecked")
     private <T> ArgumentSupplier<T> supplier(
             final Class<? extends ValueProvider<?>> providerClass,
-            final Class<?> parameterType,
+            final Parameter parameter,
             final int maxSize
     ) {
         try {
             return new ArgumentSupplier<>(
                     (ValueProvider<T>) requireNonNull(providerClass).newInstance(),
-                    requireNonNull(parameterType),
+                    requireNonNull(parameter),
                     maxSize
             );
         } catch (final Exception e) {

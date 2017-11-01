@@ -1,4 +1,4 @@
-package com.lezhnin.junit.parameters.factory;
+package com.lezhnin.junit.parameters.supplier;
 
 import com.lezhnin.junit.parameters.provider.ValueProvider;
 import java.lang.reflect.Array;

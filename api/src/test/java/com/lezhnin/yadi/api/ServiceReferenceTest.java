@@ -82,7 +82,7 @@ class ServiceReferenceTest {
     public static class TestClassProvider extends ProviderFromSupplier<Supplier<TestClass>> {
 
         public TestClassProvider() {
-            super(() -> TestClass::new, Supplier.class);
+            super(() -> TestClass::new, limiter, Supplier.class);
         }
     }
 }

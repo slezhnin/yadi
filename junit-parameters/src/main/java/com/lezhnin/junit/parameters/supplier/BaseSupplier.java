@@ -1,4 +1,4 @@
-package com.lezhnin.junit.parameters.factory;
+package com.lezhnin.junit.parameters.supplier;
 
 import static java.util.Objects.requireNonNull;
 import com.lezhnin.junit.parameters.provider.ValueProvider;

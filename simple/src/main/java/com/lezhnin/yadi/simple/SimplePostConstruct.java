@@ -2,13 +2,12 @@ package com.lezhnin.yadi.simple;
 
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
-import com.lezhnin.yadi.api.Dependency;
-import com.lezhnin.yadi.api.Dependency.InstanceMethodDependency;
-import com.lezhnin.yadi.api.Dependency.MethodDependency;
-import com.lezhnin.yadi.api.MethodNotFoundException;
+import com.lezhnin.yadi.api.dependency.Dependency;
+import com.lezhnin.yadi.api.dependency.InstanceMethodDependency;
+import com.lezhnin.yadi.api.dependency.MethodDependency;
+import com.lezhnin.yadi.api.exception.MethodNotFoundException;
 import com.lezhnin.yadi.api.ServiceLocator;
 import com.lezhnin.yadi.api.ServiceReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -38,7 +37,7 @@ public class SimplePostConstruct<T> implements Function<Dependency[], T> {
     private void invokeMethod(final Object instance, final MethodDependency methodDependency) {
         try {
             methodDependency.getMethod().invoke(
-                    instance, referencesToObjects(methodDependency.getReferences())
+                    instance, referencesToObjects(methodDependency.getParameters())
             );
         } catch (final Exception exception) {
             throw new MethodNotFoundException(

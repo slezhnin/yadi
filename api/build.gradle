@@ -2,5 +2,6 @@ group 'com.lezhnin'
 version '1.0-SNAPSHOT'
 
 dependencies {
+    testCompile project(':junit-parameters')
     compile 'com.google.code.findbugs:jsr305:3.0.2'
 }

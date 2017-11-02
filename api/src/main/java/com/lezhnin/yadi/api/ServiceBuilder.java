@@ -1,11 +1,12 @@
 package com.lezhnin.yadi.api;
 
-import static com.lezhnin.yadi.api.Dependency.ConstructorDependency.constructor;
-import static com.lezhnin.yadi.api.Dependency.MethodDependency.methodFromClass;
 import static com.lezhnin.yadi.api.ServiceDefinition.serviceDefinition;
 import static com.lezhnin.yadi.api.ServiceReference.fromTypes;
 import static com.lezhnin.yadi.api.ServiceReference.serviceReference;
+import static com.lezhnin.yadi.api.dependency.ConstructorDependency.constructor;
+import static com.lezhnin.yadi.api.dependency.MethodDependency.methodFromClass;
 import static java.util.Arrays.asList;
+import com.lezhnin.yadi.api.dependency.Dependency;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +79,7 @@ public interface ServiceBuilder<T> {
                                     public ServiceDefinition<T> build() {
                                         return serviceDefinition(
                                                 serviceReference,
-                                                methodFromClass(classReference, serviceReference, name)
+                                                methodFromClass(classReference, name)
                                         );
                                     }
                                 };
@@ -110,7 +111,7 @@ public interface ServiceBuilder<T> {
                                             public ServiceDefinition<T> build() {
                                                 return serviceDefinition(
                                                         serviceReference,
-                                                        methodFromClass(classReference, serviceReference, name, parameters)
+                                                        methodFromClass(classReference, name, parameters)
                                                 );
                                             }
                                         };
@@ -173,15 +174,17 @@ public interface ServiceBuilder<T> {
                                 return serviceDefinition;
                             }
 
-                            private ServiceDefinition<T> addMethod(final ServiceDefinition<T> serviceDefinition, final Dependency
-                                    method) {
+                            private ServiceDefinition<T> addMethod(
+                                    final ServiceDefinition<T> serviceDefinition,
+                                    final Dependency method
+                            ) {
                                 final List<Dependency> dependencies = new ArrayList<>(
-                                        asList(serviceDefinition.getPostConstructionDependencies())
+                                        asList(serviceDefinition.getPostConstruct())
                                 );
                                 dependencies.add(method);
                                 return serviceDefinition(
                                         serviceDefinition.getReference(),
-                                        serviceDefinition.getConstructionDependency(),
+                                        serviceDefinition.getConstruct(),
                                         dependencies.toArray(new Dependency[dependencies.size()])
                                 );
                             }

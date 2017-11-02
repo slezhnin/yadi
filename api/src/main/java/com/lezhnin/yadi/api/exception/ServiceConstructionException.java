@@ -1,4 +1,4 @@
-package com.lezhnin.yadi.api;
+package com.lezhnin.yadi.api.exception;
 
 public class ServiceConstructionException extends RuntimeException {
 

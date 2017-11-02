@@ -1,7 +1,7 @@
 package com.lezhnin.yadi.annotated;
 
 import static java.util.Arrays.stream;
-import com.lezhnin.yadi.api.MethodNotFoundException;
+import com.lezhnin.yadi.api.exception.MethodNotFoundException;
 import java.lang.reflect.Constructor;
 import java.util.function.Function;
 import javax.inject.Inject;

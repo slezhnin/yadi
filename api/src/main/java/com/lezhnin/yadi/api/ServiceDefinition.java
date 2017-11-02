@@ -1,43 +1,30 @@
 package com.lezhnin.yadi.api;
 
-import static java.util.Objects.requireNonNull;
-import java.util.Objects;
+import com.lezhnin.yadi.api.dependency.Dependency;
 import javax.annotation.Nonnull;
+import lombok.Data;
+import lombok.NonNull;
 
-public interface ServiceDefinition<T> {
+@Data
+public class ServiceDefinition<T> {
 
-    @Nonnull
-    ServiceReference<T> getReference();
+    @NonNull
+    private final ServiceReference<T> reference;
 
-    @Nonnull
-    Dependency<T> getConstructionDependency();
+    @NonNull
+    private final Dependency construct;
 
-    @Nonnull
-    Dependency[] getPostConstructionDependencies();
+    @NonNull
+    private final Dependency[] postConstruct;
 
-    static <T> ServiceDefinition<T> serviceDefinition(final ServiceReference<? extends T> serviceReference,
-                                                      @Nonnull final Dependency<? extends T> constructionDependency,
-                                                      @Nonnull final Dependency... postConstructionDependency) {
-        return new ServiceDefinition<T>() {
-            @SuppressWarnings("unchecked")
-            @Nonnull
-            @Override
-            public ServiceReference<T> getReference() {
-                return (ServiceReference<T>) serviceReference;
-            }
-
-            @SuppressWarnings("unchecked")
-            @Nonnull
-            @Override
-            public Dependency<T> getConstructionDependency() {
-                return (Dependency<T>) constructionDependency;
-            }
-
-            @Nonnull
-            @Override
-            public Dependency[] getPostConstructionDependencies() {
-                return requireNonNull(postConstructionDependency);
-            }
-        };
+    @SuppressWarnings("unchecked")
+    public static <T> ServiceDefinition<T> serviceDefinition(@Nonnull final ServiceReference<? extends T> serviceReference,
+                                                             @Nonnull final Dependency constructionDependency,
+                                                             @Nonnull final Dependency... postConstructionDependency) {
+        return new ServiceDefinition<>(
+                (ServiceReference<T>) serviceReference,
+                constructionDependency,
+                postConstructionDependency
+        );
     }
 }
